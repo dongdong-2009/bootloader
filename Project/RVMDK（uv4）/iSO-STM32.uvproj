@@ -138,7 +138,7 @@
           <Target>
             <UseTarget>1</UseTarget>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>0</RunToMain>
+            <RunToMain>1</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
             <RestoreWatchpoints>1</RestoreWatchpoints>
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
@@ -176,7 +176,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -349,7 +349,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -371,7 +371,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\User\SysTick</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\User\SysTick;..\..\BSP\UART;..\..\BSP\FLASH;..\..\BSP\Cryptographic;..\..\BSP\private;..\..\STM32_Cryptographic_Library;..\..\STM32_Cryptographic_Library\binary;..\..\STM32_Cryptographic_Library\inc;..\..\STM32_Cryptographic_Library\inc\AES</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -604,6 +604,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\SysTick\bsp_SysTick.c</FilePath>
             </File>
+            <File>
+              <FileName>boot_CFG.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\boot_CFG.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -613,6 +618,61 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\Doc\readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>BSP</GroupName>
+          <Files>
+            <File>
+              <FileName>uart4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\UART\uart4.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart4.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\UART\uart4.h</FilePath>
+            </File>
+            <File>
+              <FileName>Flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\FLASH\Flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>Flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\FLASH\Flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>Cryptographic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\Cryptographic\Cryptographic.c</FilePath>
+            </File>
+            <File>
+              <FileName>Cryptographic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\Cryptographic\Cryptographic.h</FilePath>
+            </File>
+            <File>
+              <FileName>private.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\private\private.c</FilePath>
+            </File>
+            <File>
+              <FileName>private.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\private\private.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>LIB</GroupName>
+          <Files>
+            <File>
+              <FileName>M3_CryptoFW_2_0_6.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\..\STM32_Cryptographic_Library\binary\MK-ARM\M3_CryptoFW_2_0_6.lib</FilePath>
             </File>
           </Files>
         </Group>

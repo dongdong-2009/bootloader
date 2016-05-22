@@ -1,64 +1,225 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  fire
-  * @version V1.0
-  * @date    2013-xx-xx
-  * @brief   systick系统定时器
-  ******************************************************************************
-  * @attention
-  *
-  * 实验平台:野火 iSO STM32 开发板 
-  * 论坛    :http://www.chuxue123.com
-  * 淘宝    :http://firestm32.taobao.com
-  *
-  ******************************************************************************
-  */
-  
+
 #include "stm32f10x.h"
 #include "bsp_SysTick.h"
 #include "bsp_led.h"
+#include "uart4.h"
 
-// 挨踢员
+#include "Flash.h"
+#include <stdio.h>
+#include "boot_CFG.h"
 
-/*
- * t : 定时时间 
- * Ticks : 多少个时钟周期产生一次中断 
- * f : 时钟频率 72000000
- * t = Ticks * 1/f = (72000000/100000) * (1/72000000) = 10us 
- */ 
+#include "crypto.h"
+#include "stm32f10x_rcc.h"
+
+typedef  void (*pFunction)(void);
+u16 parameter_app[24];
+u8 send_data[30];
+u8 txBuffer[27] =
+{
+    0x7c,
+    0x1B,
+    0x00,
+    0xA2,
+    0xFF,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x7C
+};
+
+
+pFunction Jump_To_Application;
+
+void iap_Loader_App(u32 ApplicationAddress)
+{
+    u32  JumpAddress;
+    if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
+        {
+            /* Jump to user application */
+            JumpAddress = *(__IO uint32_t*) (ApplicationAddress + 4);
+            Jump_To_Application = (pFunction) JumpAddress;
+            /* Initialize user application's Stack Pointer */
+            __set_MSP(*(__IO uint32_t*) ApplicationAddress);
+            Jump_To_Application();
+        }
+}
+
+
+void clock_init()
+{
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4
+                           ,ENABLE);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|
+                           RCC_APB2Periph_AFIO
+                           , ENABLE);
+}
+
+
+bool is_protocol(void)
+{
+    if((0x005A==flash_read_halfword(appUpdateIfoAddress))&&(0x00A5==flash_read_halfword(appUpdateIfoAddress+2)))
+        {
+            return true;
+        }
+    else
+        {
+            return false;
+        }
+}
+
+void copy_from_app(void)
+{
+    u16 temp=0;
+    for(u8 i=0; i<19; i++)
+        {
+            temp=flash_read_halfword(0x0803F000+(i<<1));
+            parameter_app[i]=temp;
+            if(i>=2)
+                {
+                    txBuffer[i+3] = temp & 0x00FF;
+                }
+            flash_write(bootUpdateIfoAddress,parameter_app,24);
+        }
+}
+
+void process_send_data(u8 * buf,u16 len)
+{
+    addAES(buf,len);
+    
+    
+}
+#include "string.h"
+
+bool update_app(u32 addr,u32 package)
+{
+    for(u16 i=1; i<=package; i++)
+        {
+        copy_from_app();
+        memcpy(send_data,txBuffer,27);
+        send_data[22]=i&0x00ff;
+        send_data[23]=i>>8;
+            
+            
+            
+//        wifi_send(buf,len);
+//        delay();
+//if()//接收到数据，进行处理
+//{
+
+//}
+//else//数据接收错误进行重发，有限次，仍然失败选择重启
+//{
+
+//}
+
+
+
+        }
+
+}
+
 
 /**
   * @brief  主函数
-  * @param  无  
+  * @param  无
   * @retval 无
   */
+u16 temp;
 int main(void)
-{	
-	/* LED 端口初始化 */
-	LED_GPIO_Config();
+{
+    u8 updateinfo = 0;
+    /* LED 端口初始化 */
+    clock_init();
 
-	/* 配置SysTick 为10us中断一次 */
-	SysTick_Init();
+    led_Init();
 
-	for(;;)
-	{
+    Uart4_Init(115200);
 
-		LED1( ON ); 
-	    Delay_us(10000);    	// 10000 * 10us = 100ms
-		//Delay_ms(100);
-		LED1( OFF );
-	  
-		LED2( ON );
-	    Delay_us(10000);		// 10000 * 10us = 100ms
-		//Delay_ms(100);
-		LED2( OFF );
-	
-		LED3( ON );
-	    Delay_us(10000);		// 10000 * 10us = 100ms
-		//Delay_ms(100);
-		LED3( OFF );	
+    Flash_Init();
+    if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress))
+        {
+            FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
+        }
+    if(0==flash_read_halfword(bootAppUpdateStausAddress))
+        {
+            if(true==is_protocol())
+                {
+                    updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
+                    if(update_master==(update_master&updateinfo))
+                        {
+                            if(update_master_NO1==(update_master_NO1&updateinfo))
+                                {
+                                    //更新程序
 
-	}     
+
+                                    FLASH_ProgramHalfWord(bootAppUpdateStausAddress,1);//更新完成
+                                }
+                            else
+                                {
+                                    //更新程序
+
+                                    FLASH_ProgramHalfWord(isbackup,1);
+                                }
+
+                        }
+                    else if(update_slave==(update_slave&updateinfo))
+                        {
+                            //更新控制板的程序
+
+
+
+                        }
+                    else//无需更新
+                        {
+                            goto jump;
+                        }
+
+                }
+            else
+                {
+                    goto jump;
+                }
+        }
+    else   //将boot的更新完成指令写成0，然后跳转到相应的程序中去
+        {
+
+            goto jump;
+        }
+jump:
+    if(1==flash_read_halfword(isbackup))
+        {
+            iap_Loader_App(appBackStartAdress);
+        }
+    else
+        {
+            iap_Loader_App(appStartAdress);
+        }
+//iap_Loader_App(appStartAdress);
+    /* 配置SysTick 为10us中断一次 */
+//	SysTick_Init();
+
+    for(;;)
+        {
+
+        }
 }
 /*********************************************END OF FILE**********************/

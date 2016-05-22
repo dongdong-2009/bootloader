@@ -1,0 +1,12 @@
+#ifndef __FLASH__H
+#define __FLASH__H
+#include "stm32f10x.h"
+#include "stdbool.h"
+
+u16 flash_read_halfword(u32 addr);
+bool flash_write(u32 addr, u16 *buf,u32 len);
+bool flash_check(u32 addr,u16 * buf,u32 len);
+void Flash_Init(void);
+
+
+#endif
