@@ -56,31 +56,26 @@ u16 crc_table(u8 *ptr,u16 len)
 	return(CRC_data); 
 }
 /*******************¼ÓCRCÐ£Ñé******************/
-void addcrc(u8 *ptr,u16 len,u8 s)
+void addcrc(u8 *ptr,u16 len)
 {
 	u16 crctmp;
 	crctmp=crc_table(ptr,len-3);
-	if(s==0)
-	{
+
 		*(ptr+len-2)=crctmp&0xff;
 		*(ptr+len-3)=(crctmp>>8)&0xff;
 		
-	}
-	else
-	{
-		*(ptr+len-3)=crctmp&0xff;
-		*(ptr+len-2)=(crctmp>>8)&0xff;
-	}	
+	
+
 }
 /**********************CrcCheck,***************/
 
-u8 checkcrc(u8 *ptr,u16 len,u8 s)
+u8 checkcrc(u8 *ptr,u16 len)
 {
 //	uint lengh;
 	u16 crctmp;
 	crctmp=crc_table(ptr,len-3);
-	if(	((s==0)&&(crctmp==(*(ptr+len-3))*256+(*(ptr+len-2))))
-		||(crctmp==(*(ptr+len-2))*256+(*(ptr+len-3)))	)
+	if(	((crctmp==(*(ptr+len-3))*256+(*(ptr+len-2))))
+		||(crctmp==(*(ptr+len-2))*256+(*(ptr+len-3))))
 		return 1;
 	else
 		return 0;
@@ -150,4 +145,25 @@ u16 trans_7c_clr(u8 *p_ad,u16 lengh)
 		}
 	return q;
 }
+
+#include "Cryptographic.h"
+
+u16 receiveDataPakageProcess(u8 *p,u16 len)
+{
+   u16 clrLen = 0;
+	 u8 crcCheckStatus;
+	
+   clrLen = trans_7c_clr(p,len);
+	 crcCheckStatus = checkcrc(p,clrLen);
+	 if(crcCheckStatus == 1)
+	 {
+      deAES(p+1,clrLen-4);
+		  return clrLen;
+	 }
+	 else
+	 {
+
+		 return 0;
+	 }
+}	
 

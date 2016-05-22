@@ -4,7 +4,9 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_gpio.h"
 #include "misc.h"
-
+u8 receive_ok=0;
+u8 buffer[2048];
+u32 bufferindex=0;
 void Uart4_Init(int baud_rate)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -51,7 +53,7 @@ void wifi_send_char(char ch)
     UART4_SEND_CHAR(ch);
 }
 
-void wifi_send(char * buf,u32 len)
+void wifi_send(u8 * buf,u32 len)
 {
     while(len--)
         {
@@ -61,6 +63,7 @@ void wifi_send(char * buf,u32 len)
 
 void UART4_IRQHandler(void)
 {
+    receive_ok=1;
 
 }
 

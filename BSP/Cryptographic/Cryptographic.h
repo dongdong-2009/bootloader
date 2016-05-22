@@ -28,4 +28,5 @@ TestStatus Buffercmp(const uint8_t* pBuffer,
 
 void addAES(u8 *p,u16 len);
 void deAES(u8 *p,u16 len);
+
 #endif
