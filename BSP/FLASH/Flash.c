@@ -18,12 +18,12 @@ bool flash_write(u32 addr, u16 *buf,u32 len)
         {
             if(FLASH_ProgramHalfWord(addr,*buf)!=FLASH_COMPLETE)
                 {
-                    return 1;
+                    return false;
                 }
             addr+=2;
             buf++;
         }
-    return 0;
+    return true;
 
 }
 
@@ -44,13 +44,12 @@ bool flash_check(u32 addr,u16 * buf,u32 len)
 	{	
 		if((*buf)!=flash_read_halfword(addr))
 		{
-			return 1;		
+			return false;		
 		}
 		addr+=2;
 		buf++;
-	}
-	
-    return 0;
+	}	
+    return true;
 }
 
 void Flash_Init(void)
@@ -60,3 +59,22 @@ void Flash_Init(void)
     FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 }
 
+
+bool write_flage(u32 addr,u32 specify,u16 value)
+{
+    u16 temp_flag[50];
+    u32 temp_addr=addr;
+    u8 index = (specify - addr)>>1;
+    for(u16 i=0;i<50;i++)
+    {        
+        temp_flag[i]=flash_read_halfword(addr);
+        addr+=2;        
+    }    
+    temp_flag[index] = value;
+//    FLASH_ErasePage(temp_addr);
+    if(FLASH_COMPLETE!=FLASH_ErasePage(temp_addr))
+    {
+        return false;
+    }    
+    return flash_write(temp_addr,temp_flag,50);
+}

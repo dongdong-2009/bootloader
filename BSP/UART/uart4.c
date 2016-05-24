@@ -4,8 +4,10 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_gpio.h"
 #include "misc.h"
+#include "string.h"
 u8 receive_ok=0;
 u8 buffer[2048];
+u8 isdata=0;
 u32 bufferindex=0;
 void Uart4_Init(int baud_rate)
 {
@@ -42,16 +44,16 @@ void Uart4_Init(int baud_rate)
 
 
 
-void UART4_SEND_CHAR(char ch)
+static void UART4_SEND_CHAR(char ch)
 {
     USART_SendData(UART4, ch);
     while (USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);
 }
 
-void wifi_send_char(char ch)
-{
-    UART4_SEND_CHAR(ch);
-}
+//static void wifi_send_char(char ch)
+//{
+//    UART4_SEND_CHAR(ch);
+//}
 
 void wifi_send(u8 * buf,u32 len)
 {
@@ -61,9 +63,45 @@ void wifi_send(u8 * buf,u32 len)
         }
 }
 
+void before_send_uart4(void)
+{
+    isdata=0;
+    bufferindex=0;
+    memset(buffer,0,2048);
+
+}
+
 void UART4_IRQHandler(void)
 {
-    receive_ok=1;
+
+    unsigned char dat;
+    if (USART_GetITStatus(USART3, USART_IT_RXNE) == RESET)
+        {
+            return;
+        }
+
+    dat = USART_ReceiveData(USART3);
+
+    USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+    if(1==isdata)
+        {
+            if(0x7c==dat)
+                {
+                    buffer[bufferindex]=dat;
+                    isdata=0;
+                    receive_ok=1;
+                }
+            else
+                {
+                    buffer[bufferindex++]=dat;
+                }
+
+        }
+    if(0x7c==dat)
+        {
+            buffer[bufferindex++]=dat;
+            isdata=1;
+        }
 
 }
 

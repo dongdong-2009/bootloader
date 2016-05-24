@@ -349,10 +349,10 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>0</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
-            <OneElfS>1</OneElfS>
+            <OneElfS>0</OneElfS>
             <Strict>0</Strict>
             <EnumInt>0</EnumInt>
             <PlainCh>0</PlainCh>
@@ -663,6 +663,16 @@
               <FileName>private.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\BSP\private\private.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\UART\uart1.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart1.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\UART\uart1.h</FilePath>
             </File>
           </Files>
         </Group>
