@@ -7,7 +7,7 @@
 #define update_slave 0x0002
 #define update_slave_NO1 0x0001
 
-#define packge_size 0x0001
+#define packge_size 1024
 
 //FLASH地址
 #define STM32_FLASH_BASE            0x08000000 	            //STM32 FLASH的起始地

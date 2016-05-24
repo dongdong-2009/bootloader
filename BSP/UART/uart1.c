@@ -6,6 +6,11 @@
 #include "misc.h"
 #include "stdio.h"
 
+u8 u1_buffer[2048];
+
+u8 is_salver=0;
+u32 u1_bufferindex=0;;
+u8 receive_salver=0;
 
 void usart1_conf(u32 baud_rate)
 {
@@ -70,7 +75,28 @@ void USART1_IRQHandler(void)
         {
 
             u8 dat = USART_ReceiveData(USART1);
-            USART1_SEND_CHAR(dat);
+//            USART1_SEND_CHAR(dat);
+            if(1==is_salver )
+            {
+                if(0x7c==dat )
+                {
+                    is_salver=0;
+                    receive_salver=1;
+                    u1_buffer[u1_bufferindex]=dat;
+                }
+                
+                else
+                {
+                    u1_buffer[u1_bufferindex++]=dat;
+                }
+            
+            }
+            if(0x7c==dat)
+            {
+              is_salver=1;  
+              u1_buffer[u1_bufferindex++]=dat;  
+            }
+            
             USART_ClearITPendingBit(USART1, USART_IT_RXNE);
         }
 }
@@ -81,4 +107,14 @@ void MASTER_SEND(u8 * buf,u32 len)
         {
             USART1_SEND_CHAR(*buf++);
         }
+}
+#include "string.h"
+
+void before_send_sa(void)
+{
+    memset(u1_buffer,0,2048);
+    receive_salver=0;
+    is_salver =0;
+    u1_bufferindex=0;
+
 }
