@@ -5,7 +5,7 @@
 #include "stm32f10x_gpio.h"
 #include "misc.h"
 #include "string.h"
-u8 receive_ok=0;
+volatile u8 receive_ok=0;
 u8 buffer[2048];
 u8 isdata=0;
 u32 bufferindex=0;
@@ -37,7 +37,6 @@ void Uart4_Init(int baud_rate)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-
     USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
     USART_Cmd(UART4, ENABLE);
 }
@@ -67,6 +66,7 @@ void before_send_uart4(void)
 {
     isdata=0;
     bufferindex=0;
+    receive_ok=0;
     memset(buffer,0,2048);
 
 }
@@ -75,14 +75,14 @@ void UART4_IRQHandler(void)
 {
 
     unsigned char dat;
-    if (USART_GetITStatus(USART3, USART_IT_RXNE) == RESET)
+    if (USART_GetITStatus(UART4, USART_IT_RXNE) == RESET)
         {
             return;
         }
 
-    dat = USART_ReceiveData(USART3);
+    dat = USART_ReceiveData(UART4);
 
-    USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
     if(1==isdata)
         {
             if(0x7c==dat)

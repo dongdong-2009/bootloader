@@ -145,8 +145,24 @@ u16 trans_7c_clr(u8 *p_ad,u16 lengh)
 		}
 	return q;
 }
+  #include "crypto.h"
+#include "string.h"
+//º”√‹
+void addAES(u8 *p,u16 len)
+{
+	//u16 i;
+	STM32_AES_CTR_Encrypt(p,len, Key, IV, sizeof(IV),OutputMessage,&OutputMessageLength);
+	memcpy(p,OutputMessage,len);
 
-#include "Cryptographic.h"
+}
+
+//Ω‚√‹
+void deAES(u8 *p,u16 len)
+{
+	STM32_AES_CTR_Decrypt( p,len, Key, IV, sizeof(IV), OutputMessage,&OutputMessageLength);
+	memcpy(p,OutputMessage,len);
+
+}
 
 u16 receiveDataPakageProcess(u8 *p,u16 len)
 {
@@ -166,4 +182,6 @@ u16 receiveDataPakageProcess(u8 *p,u16 len)
 		 return 0;
 	 }
 }	
+
+
 

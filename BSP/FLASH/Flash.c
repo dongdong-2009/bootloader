@@ -14,17 +14,17 @@ u8 flash_read_char(u32 addr)
 
 bool flash_write(u32 addr, u16 *buf,u32 len)
 {
-    while(len--)
+    for(u32 i=0;i<len;i++)
         {
-            if(FLASH_ProgramHalfWord(addr,*buf)!=FLASH_COMPLETE)
-                {
-                    return false;
-                }
+//            if(FLASH_ProgramHalfWord(addr,*buf)!=FLASH_COMPLETE)
+//                {
+//                    return false;
+//                }
+            FLASH_ProgramHalfWord(addr,*buf);
             addr+=2;
             buf++;
         }
     return true;
-
 }
 
 
@@ -55,12 +55,12 @@ bool flash_check(u32 addr,u16 * buf,u32 len)
 void Flash_Init(void)
 {
     FLASH_Unlock();
-//使用结束之后需要使用Flash_Lock();重新将flash置于上锁状态
+    
     FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 }
 
 
-bool write_flage(u32 addr,u32 specify,u16 value)
+bool write_flage(u32 addr,u32 specify,char value)
 {
     u16 temp_flag[50];
     u32 temp_addr=addr;
@@ -71,10 +71,12 @@ bool write_flage(u32 addr,u32 specify,u16 value)
         addr+=2;        
     }    
     temp_flag[index] = value;
-//    FLASH_ErasePage(temp_addr);
-    if(FLASH_COMPLETE!=FLASH_ErasePage(temp_addr))
-    {
-        return false;
-    }    
-    return flash_write(temp_addr,temp_flag,50);
+    FLASH_ErasePage(temp_addr);
+//    if(FLASH_COMPLETE!=FLASH_ErasePage(temp_addr))
+//    {
+//        return false;
+//    }    
+     
+        bool st=flash_write(temp_addr,temp_flag,50);
+    return st;
 }

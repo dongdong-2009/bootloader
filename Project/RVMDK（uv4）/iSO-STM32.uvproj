@@ -349,7 +349,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>0</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -645,16 +645,6 @@
               <FilePath>..\..\BSP\FLASH\Flash.h</FilePath>
             </File>
             <File>
-              <FileName>Cryptographic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\Cryptographic\Cryptographic.c</FilePath>
-            </File>
-            <File>
-              <FileName>Cryptographic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\Cryptographic\Cryptographic.h</FilePath>
-            </File>
-            <File>
               <FileName>private.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BSP\private\private.c</FilePath>
@@ -673,6 +663,16 @@
               <FileName>uart1.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\BSP\UART\uart1.h</FilePath>
+            </File>
+            <File>
+              <FileName>crypto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\Cryptographic\crypto.c</FilePath>
+            </File>
+            <File>
+              <FileName>crypto.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\Cryptographic\crypto.h</FilePath>
             </File>
           </Files>
         </Group>

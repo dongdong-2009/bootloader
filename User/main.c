@@ -6,7 +6,7 @@
 #include "Flash.h"
 #include <stdio.h>
 #include "boot_CFG.h"
-#include "Cryptographic.h"
+
 #include "crypto.h"
 #include "stm32f10x_rcc.h"
 #include "private.h"
@@ -67,13 +67,22 @@ void iap_Loader_App(u32 ApplicationAddress)
 
 void clock_init()
 {
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4
-                           ,ENABLE);
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|
-                           RCC_APB2Periph_AFIO
-                           , ENABLE);
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA		  // 开启APB时钟
+							|RCC_APB2Periph_GPIOB
+							|RCC_APB2Periph_GPIOC
+							|RCC_APB2Periph_GPIOD
+							|RCC_APB2Periph_GPIOE
+							|RCC_APB2Periph_USART1
+							|RCC_APB2Periph_AFIO
+							,ENABLE);
+	RCC_APB1PeriphClockCmd(
+                            RCC_APB1Periph_USART2|
+							RCC_APB1Periph_USART3|
+							RCC_APB1Periph_UART4|
+							RCC_APB1Periph_UART5
+	            |RCC_APB1Periph_TIM3
+							,ENABLE);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 }
 
 
@@ -116,13 +125,17 @@ void data_wifi_processed(u8 * buf,u16 len)
 
 bool delay(u32 timeout)
 {
-    while(1!=receive_ok) {
+     
         for(u8 i=0; i<timeout/10; i++) {
+            if(1!=receive_ok)
+            {
             Delay_us(10);
+            }
+            else {
+            return true;
+            }
         }
         return false;
-    }
-    return true;
 }
 
 
@@ -203,11 +216,16 @@ u8 update_app(u32 addr,u32 package)
         memcpy(send_data,txBuffer,27);
         send_data[22]=i&0x00ff;
         send_data[23]=i>>8;
-        data_wifi_processed(send_data,27);
+        if(0x37==i)
+        {
+        char mmm=1;
+        
+        }
+        data_wifi_processed(send_data,27);        
 resend:
         before_send_uart4();
         wifi_send(send_data,27);
-        bool temp=delay(100);
+        bool temp=delay(10000);
         if(temp==true) { //接收成功
             if(receiveDataPakageProcess(buffer,bufferindex)) { //数据校验正确
                 if(i%2) {
