@@ -20,7 +20,8 @@ u16 parameter_app[24];
 
 u8 send_data[30];
 
-u8 txBuffer[27] = {
+u8 txBuffer[27] =
+{
     0x7c,
     0x1B,
     0x00,
@@ -55,57 +56,65 @@ pFunction Jump_To_Application;
 void iap_Loader_App(u32 ApplicationAddress)
 {
     u32  JumpAddress;
-    if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000) {
-        /* Jump to user application */
-        JumpAddress = *(__IO uint32_t*) (ApplicationAddress + 4);
-        Jump_To_Application = (pFunction) JumpAddress;
-        /* Initialize user application's Stack Pointer */
-        __set_MSP(*(__IO uint32_t*) ApplicationAddress);
-        Jump_To_Application();
-    }
+    if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
+        {
+            /* Jump to user application */
+            JumpAddress = *(__IO uint32_t*) (ApplicationAddress + 4);
+            Jump_To_Application = (pFunction) JumpAddress;
+            /* Initialize user application's Stack Pointer */
+            __set_MSP(*(__IO uint32_t*) ApplicationAddress);
+            Jump_To_Application();
+        }
 }
 
 void clock_init()
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA		  // 开启APB时钟
-							|RCC_APB2Periph_GPIOB
-							|RCC_APB2Periph_GPIOC
-							|RCC_APB2Periph_GPIOD
-							|RCC_APB2Periph_GPIOE
-							|RCC_APB2Periph_USART1
-							|RCC_APB2Periph_AFIO
-							,ENABLE);
-	RCC_APB1PeriphClockCmd(
-                            RCC_APB1Periph_USART2|
-							RCC_APB1Periph_USART3|
-							RCC_APB1Periph_UART4|
-							RCC_APB1Periph_UART5
-	            |RCC_APB1Periph_TIM3
-							,ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA		  // 开启APB时钟
+                           |RCC_APB2Periph_GPIOB
+                           |RCC_APB2Periph_GPIOC
+                           |RCC_APB2Periph_GPIOD
+                           |RCC_APB2Periph_GPIOE
+                           |RCC_APB2Periph_USART1
+                           |RCC_APB2Periph_AFIO
+                           ,ENABLE);
+    RCC_APB1PeriphClockCmd(
+        RCC_APB1Periph_USART2|
+        RCC_APB1Periph_USART3|
+        RCC_APB1Periph_UART4|
+        RCC_APB1Periph_UART5
+        |RCC_APB1Periph_TIM3
+        ,ENABLE);
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 }
 
 
 bool is_protocol(void)
 {
-    if((0x005A==flash_read_halfword(appUpdateIfoAddress))&&(0x00A5==flash_read_halfword(appUpdateIfoAddress+2))) {
-        return true;
-    } else {
-        return false;
-    }
+    if((0x005A==flash_read_halfword(appUpdateIfoAddress))&&(0x00A5==flash_read_halfword(appUpdateIfoAddress+2)))
+        {
+            return true;
+        }
+    else
+        {
+            return false;
+        }
 }
 
 void copy_from_app(void)
 {
     u16 temp=0;
-    for(u8 i=0; i<19; i++) {
-        temp=flash_read_halfword(0x0803F000+(i<<1));
-        parameter_app[i]=temp;
-        if(i>=2) {
-            txBuffer[i+3] = temp & 0x00FF;
+    for(u8 i=0; i<19; i++)
+        {
+            temp=flash_read_halfword(0x0803F000+(i<<1));
+            parameter_app[i]=temp;
+            if(i>=2)
+                {
+                    txBuffer[i+3] = temp & 0x00FF;
+                }
+            
         }
+        FLASH_ErasePage(bootUpdateIfoAddress);
         flash_write(bootUpdateIfoAddress,parameter_app,24);
-    }
 }
 
 void crc_7c(u8 * buf,u16 len)
@@ -125,28 +134,32 @@ void data_wifi_processed(u8 * buf,u16 len)
 
 bool delay(u32 timeout)
 {
-     
-        for(u8 i=0; i<timeout/10; i++) {
+
+    for(u8 i=0; i<timeout/10; i++)
+        {
             if(1!=receive_ok)
-            {
-            Delay_us(10);
-            }
-            else {
-            return true;
-            }
+                {
+                    Delay_us(10);
+                }
+            else
+                {
+                    return true;
+                }
         }
-        return false;
+    return false;
 }
 
 
 bool delay_u1(u32 timeout)
 {
-    while(1!=receive_salver) {
-        for(u8 i=0; i<timeout/10; i++) {
-            Delay_us(10);
+    while(1!=receive_salver)
+        {
+            for(u8 i=0; i<timeout/10; i++)
+                {
+                    Delay_us(10);
+                }
+            return false;
         }
-        return false;
-    }
     return true;
 }
 
@@ -159,11 +172,14 @@ u16 sa_dat_process(u8 *p,u16 len)
     clrLen = trans_7c_clr(p,len);
     crcCheckStatus = checkcrc(p,clrLen);
 
-    if(crcCheckStatus == 1) {
-        return clrLen;
-    } else {
-        return 0;
-    }
+    if(crcCheckStatus == 1)
+        {
+            return clrLen;
+        }
+    else
+        {
+            return 0;
+        }
 }
 
 
@@ -180,30 +196,39 @@ u8 update_salver(void)
 resend_sa:
     before_send_sa();
     MASTER_SEND(send_data,25);
-    if(true==delay_u1(100)) {
-        //数据处理
-        if(sa_dat_process(u1_buffer,u1_bufferindex)>0) {
+    if(true==delay_u1(100))
+        {
+            //数据处理
+            if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
+                {
 
-            //接收到从机的确认升级
-            if((0xA4==u1_buffer[3])&&(0==memcmp(&send_data[5],&u1_buffer[5],17))) {
-                //接受数据正常
-                return 0;
-            } else { //异常
-                err_sa++;
-                if(err_sa<5) {
+                    //接收到从机的确认升级
+                    if((0xA4==u1_buffer[3])&&(0==memcmp(&send_data[5],&u1_buffer[5],17)))
+                        {
+                            //接受数据正常
+                            return 0;
+                        }
+                    else     //异常
+                        {
+                            err_sa++;
+                            if(err_sa<5)
+                                {
+                                    goto resend_sa;
+                                }
+                            return 2;
+                        }
+                }
+            return 3;
+        }
+    else
+        {
+            err_sa++;
+            if(err_sa<5)
+                {
                     goto resend_sa;
                 }
-                return 2;
-            }
+            return 1;//从机应答失败
         }
-        return 3;
-    } else {
-        err_sa++;
-        if(err_sa<5) {
-            goto resend_sa;
-        }
-        return 1;//从机应答失败
-    }
 
 }
 
@@ -211,42 +236,48 @@ resend_sa:
 u8 update_app(u32 addr,u32 package)
 {
     u8 error_count=0;
-    for(u16 i=1; i<=package; i++) {
-//        copy_from_app();
-        memcpy(send_data,txBuffer,27);
-        send_data[22]=i&0x00ff;
-        send_data[23]=i>>8;
-        if(0x37==i)
+    for(u16 i=1; i<=package; i++)
         {
-        char mmm=1;
-        
-        }
-        data_wifi_processed(send_data,27);        
+//        copy_from_app();
+            memcpy(send_data,txBuffer,27);
+            send_data[22]=i&0x00ff;
+            send_data[23]=i>>8;
+            data_wifi_processed(send_data,27);
 resend:
-        before_send_uart4();
-        wifi_send(send_data,27);
-        bool temp=delay(10000);
-        if(temp==true) { //接收成功
-            if(receiveDataPakageProcess(buffer,bufferindex)) { //数据校验正确
-                if(i%2) {
-                    FLASH_ErasePage(addr+(i-1)*packge_size);
+            before_send_uart4();
+            wifi_send(send_data,27);
+            bool temp=delay(10000);
+            if(temp==true)   //接收成功
+                {
+                    u16 __len=receiveDataPakageProcess(buffer,bufferindex);
+                    if(__len!=0)   //数据校验正确
+                        {
+                            if(i%2)
+                                {
+                                    FLASH_ErasePage(addr+(i-1)*packge_size);
+                                }
+                            writeFlash(addr+(i-1)*packge_size,&buffer[24],__len-27);
+                        }
+                    else     //失败
+                        {
+                            error_count++;
+                            if(error_count<resend_times)
+                                {
+                                    goto resend;
+                                }
+                            return 1;
+                        }
                 }
-                writeFlash(addr+(i-1)*packge_size,&buffer[24],bufferindex-27);
-            } else { //失败
-                error_count++;
-                if(error_count<resend_times) {
-                    goto resend;
+            else     //接收失败
+                {
+                    error_count++;
+                    if(error_count<resend_times)
+                        {
+                            goto resend;
+                        }
+                    return 2;
                 }
-                return 1;
-            }
-        } else { //接收失败
-            error_count++;
-            if(error_count<resend_times) {
-                goto resend;
-            }
-            return 2;
         }
-}
     return 0;
 }
 
@@ -273,18 +304,27 @@ int main(void)
 
     Flash_Init();
 
-    if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress)) {
-        FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
-    }
-    if(0==flash_read_halfword(bootAppUpdateStausAddress)) {
-        if(true==is_protocol()) {
-            updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-            updateinfo=0X30;
-            if(update_master==(update_master&updateinfo)) {
-                if(update_master_NO1==(update_master_NO1&updateinfo)) {
-                    //更新程序
+    if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress))
+        {
+            FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
+        }       
+//        FLASH_ErasePage(bootAppUpdateStausAddress);
+//                     FLASH_ProgramHalfWord(bootAppUpdateStausAddress,11);             
+//                       write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,25);//将boot更新完成的标志置1   
+    if(0==flash_read_halfword(bootAppUpdateStausAddress))
+        {
+            if(true==is_protocol())
+                {
+                    updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
+//                    updateinfo=0X30;
+                    if(update_master==(update_master&updateinfo))
+                        {
+                            if(update_master_NO1==(update_master_NO1&updateinfo))
+                                {
+                                    //更新程序
                     copy_from_app();//需要更新的信息拷贝过来
                     if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20])) {
+                        write_flage(isbackup,isbackup,0);
                         write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
                         write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,1);//将boot更新完成的标志置1
                         write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
@@ -297,7 +337,9 @@ int main(void)
                         write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                         NVIC_SystemReset();
                     }
-                } else {
+                                }
+                            else
+                                {       
                     copy_from_app();//需要更新的信息拷贝过来
                     //更新程序
                     if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20])) {
@@ -315,78 +357,110 @@ int main(void)
                         NVIC_SystemReset();
                     }
 
-                }
-
-            } else if(update_slave==(update_slave&updateinfo)) {
-                u8 __err=0;
-                if(0==update_salver()) { //从机升级应答正常
-                    while(1) {
-u1_rec_ok:
-                        if(1==receive_salver) {
-                            if(sa_dat_process(u1_buffer,u1_bufferindex)>0) {
-                                if(0xA2==u1_buffer[3]) {
-                                    data_wifi_processed(u1_buffer,27);
-re:
-                                    before_send_uart4();
-                                    wifi_send(u1_buffer,27);
-                                    bool temp=delay(100);
-                                    if(temp==true) { //接收成功
-                                        if(receiveDataPakageProcess(buffer,bufferindex)) { //数据校验正确
-                                            crc_7c(buffer,bufferindex);
-__re_send_sa:
-                                            before_send_sa();
-                                            MASTER_SEND(buffer,bufferindex);
-                                            if(true==delay_u1(1000)) {
-                                                //接收成功
-                                                goto u1_rec_ok;
-                                            } else {
-                                                __err++;
-                                                if(__err<5) {
-                                                    goto __re_send_sa;
-                                                }
-                                                goto jump;
-                                            }
-                                        } else { //失败
-                                            __err++;
-                                            if(__err<5) {
-                                                goto re;
-                                            }
-                                        }
-                                    } else { //接收失败
-                                        __err++;
-                                        if(__err<5) {
-                                            goto re;
-                                        }
-                                    }
-                                } else if(0xFF==u1_buffer[3]) { //更新完成，重启
                                 }
-                            }
+
                         }
-                    }
-                } else { //应答异常
+                    else if(update_slave==(update_slave&updateinfo))
+                        {
+                            u8 __err=0;
+                            if(0==update_salver())   //从机升级应答正常
+                                {
+                                    while(1)
+                                        {
+u1_rec_ok:
+                                            if(1==receive_salver)
+                                                {
+                                                    if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
+                                                        {
+                                                            if(0xA2==u1_buffer[3])
+                                                                {
+                                                                    data_wifi_processed(u1_buffer,27);
+re:
+                                                                    before_send_uart4();
+                                                                    wifi_send(u1_buffer,27);
+                                                                    bool temp=delay(100);
+                                                                    if(temp==true)   //接收成功
+                                                                        {
+                                                                            if(receiveDataPakageProcess(buffer,bufferindex))   //数据校验正确
+                                                                                {
+                                                                                    crc_7c(buffer,bufferindex);
+__re_send_sa:
+                                                                                    before_send_sa();
+                                                                                    MASTER_SEND(buffer,bufferindex);
+                                                                                    if(true==delay_u1(1000))
+                                                                                        {
+                                                                                            //接收成功
+                                                                                            goto u1_rec_ok;
+                                                                                        }
+                                                                                    else
+                                                                                        {
+                                                                                            __err++;
+                                                                                            if(__err<5)
+                                                                                                {
+                                                                                                    goto __re_send_sa;
+                                                                                                }
+                                                                                            goto jump;
+                                                                                        }
+                                                                                }
+                                                                            else     //失败
+                                                                                {
+                                                                                    __err++;
+                                                                                    if(__err<5)
+                                                                                        {
+                                                                                            goto re;
+                                                                                        }
+                                                                                }
+                                                                        }
+                                                                    else     //接收失败
+                                                                        {
+                                                                            __err++;
+                                                                            if(__err<5)
+                                                                                {
+                                                                                    goto re;
+                                                                                }
+                                                                        }
+                                                                }
+                                                            else if(0xFF==u1_buffer[3])     //更新完成，重启
+                                                                {
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                            else     //应答异常
+                                {
+                                    goto jump;
+                                }
+                        }
+                }
+            else
+                {
                     goto jump;
                 }
-            }
-        } else {
+        }
+    else     //将boot的更新完成指令写成0，然后跳转到相应的程序中去
+        {
+            write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);//将boot更新完成的标志置1
             goto jump;
         }
-    } else { //将boot的更新完成指令写成0，然后跳转到相应的程序中去
-        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);//将boot更新完成的标志置1
-        goto jump;
-    }
+        
 jump:
-    if(1==flash_read_halfword(isbackup)) {
-        USART_DeInit(USART1);
-        USART_DeInit(UART4);
-        iap_Loader_App(appBackStartAdress);
-    } else {
-        USART_DeInit(USART1);
-        USART_DeInit(UART4);
-        iap_Loader_App(appStartAdress);
-    }
+    if(1==flash_read_halfword(isbackup))
+        {
+            USART_DeInit(USART1);
+            USART_DeInit(UART4);
+            iap_Loader_App(appBackStartAdress);
+        }
+    else
+        {
+            USART_DeInit(USART1);
+            USART_DeInit(UART4);
+            iap_Loader_App(appStartAdress);
+        }
 //restart:
 //        NVIC_SystemReset();
-    for(;;) {
-    }
+    for(;;)
+        {
+        }
 }
 /*********************************************END OF FILE**********************/

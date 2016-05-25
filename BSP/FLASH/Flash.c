@@ -16,11 +16,11 @@ bool flash_write(u32 addr, u16 *buf,u32 len)
 {
     for(u32 i=0;i<len;i++)
         {
-//            if(FLASH_ProgramHalfWord(addr,*buf)!=FLASH_COMPLETE)
-//                {
-//                    return false;
-//                }
-            FLASH_ProgramHalfWord(addr,*buf);
+            if(FLASH_ProgramHalfWord(addr,*buf)!=FLASH_COMPLETE)
+                {
+                    return false;
+                }
+//            FLASH_ProgramHalfWord(addr,*buf);
             addr+=2;
             buf++;
         }
