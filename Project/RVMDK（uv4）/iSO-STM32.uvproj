@@ -412,42 +412,97 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>STARTUP</GroupName>
+          <GroupName>USER</GroupName>
           <Files>
             <File>
-              <FileName>startup_stm32f10x_hd.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\Libraries\CMSIS\startup\startup_stm32f10x_hd.s</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\stm32f10x_conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\stm32f10x_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_it.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\stm32f10x_it.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Led\bsp_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_SysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\SysTick\bsp_SysTick.c</FilePath>
+            </File>
+            <File>
+              <FileName>boot_CFG.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\boot_CFG.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>CMSIS</GroupName>
+          <GroupName>BSP</GroupName>
           <Files>
             <File>
-              <FileName>core_cm3.c</FileName>
+              <FileName>uart4.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Libraries\CMSIS\core_cm3.c</FilePath>
+              <FilePath>..\..\BSP\UART\uart4.c</FilePath>
             </File>
             <File>
-              <FileName>core_cm3.h</FileName>
+              <FileName>uart4.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\Libraries\CMSIS\core_cm3.h</FilePath>
+              <FilePath>..\..\BSP\UART\uart4.h</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\Libraries\CMSIS\stm32f10x.h</FilePath>
-            </File>
-            <File>
-              <FileName>system_stm32f10x.c</FileName>
+              <FileName>Flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Libraries\CMSIS\system_stm32f10x.c</FilePath>
+              <FilePath>..\..\BSP\FLASH\Flash.c</FilePath>
             </File>
             <File>
-              <FileName>system_stm32f10x.h</FileName>
+              <FileName>Flash.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\Libraries\CMSIS\system_stm32f10x.h</FilePath>
+              <FilePath>..\..\BSP\FLASH\Flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>private.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\private\private.c</FilePath>
+            </File>
+            <File>
+              <FileName>private.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\private\private.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\UART\uart1.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart1.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\UART\uart1.h</FilePath>
+            </File>
+            <File>
+              <FileName>crypto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\Cryptographic\crypto.c</FilePath>
+            </File>
+            <File>
+              <FileName>crypto.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\Cryptographic\crypto.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -572,107 +627,42 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>CMSIS</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>core_cm3.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\main.c</FilePath>
+              <FilePath>..\..\Libraries\CMSIS\core_cm3.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x_conf.h</FileName>
+              <FileName>core_cm3.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\stm32f10x_conf.h</FilePath>
+              <FilePath>..\..\Libraries\CMSIS\core_cm3.h</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\stm32f10x_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_it.h</FileName>
+              <FileName>stm32f10x.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\stm32f10x_it.h</FilePath>
+              <FilePath>..\..\Libraries\CMSIS\stm32f10x.h</FilePath>
             </File>
             <File>
-              <FileName>bsp_led.c</FileName>
+              <FileName>system_stm32f10x.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\Led\bsp_led.c</FilePath>
+              <FilePath>..\..\Libraries\CMSIS\system_stm32f10x.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_SysTick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\SysTick\bsp_SysTick.c</FilePath>
-            </File>
-            <File>
-              <FileName>boot_CFG.h</FileName>
+              <FileName>system_stm32f10x.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\boot_CFG.h</FilePath>
+              <FilePath>..\..\Libraries\CMSIS\system_stm32f10x.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>DOC</GroupName>
+          <GroupName>STARTUP</GroupName>
           <Files>
             <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\Doc\readme.txt</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>BSP</GroupName>
-          <Files>
-            <File>
-              <FileName>uart4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\UART\uart4.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart4.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\UART\uart4.h</FilePath>
-            </File>
-            <File>
-              <FileName>Flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\FLASH\Flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>Flash.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\FLASH\Flash.h</FilePath>
-            </File>
-            <File>
-              <FileName>private.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\private\private.c</FilePath>
-            </File>
-            <File>
-              <FileName>private.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\private\private.h</FilePath>
-            </File>
-            <File>
-              <FileName>uart1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\UART\uart1.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart1.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\UART\uart1.h</FilePath>
-            </File>
-            <File>
-              <FileName>crypto.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BSP\Cryptographic\crypto.c</FilePath>
-            </File>
-            <File>
-              <FileName>crypto.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\BSP\Cryptographic\crypto.h</FilePath>
+              <FileName>startup_stm32f10x_hd.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\Libraries\CMSIS\startup\startup_stm32f10x_hd.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -683,6 +673,16 @@
               <FileName>M3_CryptoFW_2_0_6.lib</FileName>
               <FileType>4</FileType>
               <FilePath>..\..\STM32_Cryptographic_Library\binary\MK-ARM\M3_CryptoFW_2_0_6.lib</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DOC</GroupName>
+          <Files>
+            <File>
+              <FileName>readme.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\Doc\readme.txt</FilePath>
             </File>
           </Files>
         </Group>

@@ -318,7 +318,7 @@ int main(void)
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-//                    updateinfo=0X02;
+//                    updateinfo=0X02;//模拟测试升级从机
                     if(update_master==(update_master&updateinfo))
                         {
                             if(update_master_NO1==(update_master_NO1&updateinfo))
@@ -447,20 +447,20 @@ __re_send_sa:
         }
         
 jump:       
-//    if(1==flash_read_halfword(isbackup))
-//        {
-//            USART_DeInit(USART1);
-//            USART_DeInit(UART4);
-//            iap_Loader_App(appBackStartAdress);
-//        }
-//    else
-//        {
-//            USART_DeInit(USART1);
-//            USART_DeInit(UART4);
-//            iap_Loader_App(appStartAdress);
-//        }
-////restart:
-////        NVIC_SystemReset();
+    if(1==flash_read_halfword(isbackup))
+        {
+            USART_DeInit(USART1);
+            USART_DeInit(UART4);
+            iap_Loader_App(appBackStartAdress);
+        }
+    else
+        {
+            USART_DeInit(USART1);
+            USART_DeInit(UART4);
+            iap_Loader_App(appStartAdress);
+        }
+//restart:
+//        NVIC_SystemReset();
     for(;;)
         {
             LED1(0);
