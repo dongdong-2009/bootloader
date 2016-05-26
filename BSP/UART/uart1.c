@@ -49,17 +49,17 @@ void usart1_conf(u32 baud_rate)
 }
 
 
-///重定向c库函数printf到USART1
-int fputc(int ch, FILE *f)
-{
-    /* 发送一个字节数据到USART1 */
-    USART_SendData(USART1, (uint8_t) ch);
+/////重定向c库函数printf到USART1
+//int fputc(int ch, FILE *f)
+//{
+//    /* 发送一个字节数据到USART1 */
+//    USART_SendData(USART1, (uint8_t) ch);
 
-    /* 等待发送完毕 */
-    while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+//    /* 等待发送完毕 */
+//    while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 
-    return (ch);
-}
+//    return (ch);
+//}
 
 
 static void USART1_SEND_CHAR(char ch)
@@ -76,28 +76,43 @@ void USART1_IRQHandler(void)
 
             u8 dat = USART_ReceiveData(USART1);
 //            USART1_SEND_CHAR(dat);
+             USART_ClearITPendingBit(USART1, USART_IT_RXNE);
             if(1==is_salver )
-            {
-                if(0x7c==dat )
                 {
-                    is_salver=0;
-                    receive_salver=1;
-                    u1_buffer[u1_bufferindex]=dat;
+                    if(0x7c==dat )  //判断一下是不是一帧数据
+                        {
+
+                            if(u1_bufferindex<10)//数据帧起始字节
+                                {
+                                    is_salver=1;
+                                    u1_bufferindex=0;
+                                    u1_buffer[u1_bufferindex++]=dat;
+                                    USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+                                   
+                                }
+                            else
+                                {
+                                    is_salver=0;
+                                    receive_salver=1;
+                                    u1_buffer[u1_bufferindex]=dat;
+                                    u1_bufferindex=0;
+                                   
+
+                                }
+                        }
+
+                    else
+                        {
+                            u1_buffer[u1_bufferindex++]=dat;
+                        }
+                 return ;
                 }
-                
-                else
+            if(0x7c==dat)
                 {
+                    is_salver=1;
                     u1_buffer[u1_bufferindex++]=dat;
                 }
-            
-            }
-            if(0x7c==dat)
-            {
-              is_salver=1;  
-              u1_buffer[u1_bufferindex++]=dat;  
-            }
-            
-            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+           
         }
 }
 

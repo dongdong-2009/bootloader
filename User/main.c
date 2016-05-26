@@ -135,7 +135,7 @@ void data_wifi_processed(u8 * buf,u16 len)
 bool delay(u32 timeout)
 {
 
-    for(u8 i=0; i<timeout/10; i++)
+    for(u32 i=0; i<timeout/10; i++)
         {
             if(1!=receive_ok)
                 {
@@ -151,16 +151,19 @@ bool delay(u32 timeout)
 
 
 bool delay_u1(u32 timeout)
-{
-    while(1!=receive_salver)
+{      
+            for(u32 i=0; i<timeout/10; i++)
         {
-            for(u8 i=0; i<timeout/10; i++)
+            if(1!=receive_salver)
                 {
                     Delay_us(10);
                 }
-            return false;
+            else
+                {
+                    return true;
+                }
         }
-    return true;
+    return false;
 }
 
 
@@ -196,7 +199,7 @@ u8 update_salver(void)
 resend_sa:
     before_send_sa();
     MASTER_SEND(send_data,25);
-    if(true==delay_u1(100))
+    if(true==delay_u1(100000))
         {
             //数据处理
             if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
@@ -211,7 +214,7 @@ resend_sa:
                     else     //异常
                         {
                             err_sa++;
-                            if(err_sa<5)
+                            if(err_sa<10)
                                 {
                                     goto resend_sa;
                                 }
@@ -223,7 +226,7 @@ resend_sa:
     else
         {
             err_sa++;
-            if(err_sa<5)
+            if(err_sa<10)
                 {
                     goto resend_sa;
                 }
@@ -292,7 +295,7 @@ int main(void)
 {
 
 
-    u8 updateinfo = 0;
+     u8 updateinfo = 0;
     /* LED 端口初始化 */
     clock_init();
 
@@ -303,20 +306,19 @@ int main(void)
     SysTick_Init();
 
     Flash_Init();
+    
+    usart1_conf(115200);
 
     if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress))
         {
             FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
         }       
-//        FLASH_ErasePage(bootAppUpdateStausAddress);
-//                     FLASH_ProgramHalfWord(bootAppUpdateStausAddress,11);             
-//                       write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,25);//将boot更新完成的标志置1   
     if(0==flash_read_halfword(bootAppUpdateStausAddress))
         {
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-//                    updateinfo=0X30;
+//                    updateinfo=0X02;
                     if(update_master==(update_master&updateinfo))
                         {
                             if(update_master_NO1==(update_master_NO1&updateinfo))
@@ -444,23 +446,28 @@ __re_send_sa:
             goto jump;
         }
         
-jump:
-    if(1==flash_read_halfword(isbackup))
-        {
-            USART_DeInit(USART1);
-            USART_DeInit(UART4);
-            iap_Loader_App(appBackStartAdress);
-        }
-    else
-        {
-            USART_DeInit(USART1);
-            USART_DeInit(UART4);
-            iap_Loader_App(appStartAdress);
-        }
-//restart:
-//        NVIC_SystemReset();
+jump:       
+//    if(1==flash_read_halfword(isbackup))
+//        {
+//            USART_DeInit(USART1);
+//            USART_DeInit(UART4);
+//            iap_Loader_App(appBackStartAdress);
+//        }
+//    else
+//        {
+//            USART_DeInit(USART1);
+//            USART_DeInit(UART4);
+//            iap_Loader_App(appStartAdress);
+//        }
+////restart:
+////        NVIC_SystemReset();
     for(;;)
         {
+            LED1(0);
+            Delay_us(10000);
+            LED1(1);
+            Delay_us(10000);
+            
         }
 }
 /*********************************************END OF FILE**********************/
