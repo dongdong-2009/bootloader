@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V2.0.6
   * @date    25-June-2013
-  * @brief   This file contains all the functions prototypes for the config firmware 
+  * @brief   This file contains all the functions prototypes for the config firmware
   *          library.
   ******************************************************************************
   * @attention
@@ -17,8 +17,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -63,9 +63,9 @@
 #endif
 
 #ifdef CRL_CPU_SUPPORT_MISALIGNED
-  #ifndef CRL_ENDIANNESS
-    #error "With CRL_CPU_SUPPORT_MISALIGNED=1 a definition for CRL_ENDIANNESS is required!"
-  #endif
+#ifndef CRL_ENDIANNESS
+#error "With CRL_CPU_SUPPORT_MISALIGNED=1 a definition for CRL_ENDIANNESS is required!"
+#endif
 #endif
 
 #if defined(INCLUDE_GCM) && !defined(INCLUDE_AES)
@@ -109,7 +109,7 @@
 #define CL_ON_STM32  /*!< STM32 Directive has been found  */
 #include "stm32f0xx.h"
 #include "stm32f0xx_rcc.h"
-#endif 
+#endif
 
 /* F1 */
 #if defined (STM32F10X_LD) || defined (STM32F10X_LD_VL) || defined (STM32F10X_MD) || defined (STM32F10X_MD_VL) || defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) || defined (STM32F10X_XL) || defined (STM32F10X_CL)
@@ -124,21 +124,21 @@
 #include "stm32f2xx_rcc.h"
 #include "stm32f2xx_rng.h"
 #define USE_HW_RNG  /*!<  HW RNG is present */
-#endif 
+#endif
 
 /* F30X */
 #if defined (STM32F30X)
 #define CL_ON_STM32 /*!< STM32 Directive has been found  */
 #include "stm32f30x.h"
 #include "stm32f30x_rcc.h"
-#endif 
+#endif
 
 /* F37X */
 #if defined (STM32F37X)
 #define CL_ON_STM32 /*!< STM32 Directive has been found  */
 #include "stm32f37x.h"
 #include "stm32f37x_rcc.h"
-#endif 
+#endif
 
 /* F4 with TRNG */
 #if defined (STM32F4XX) || defined (STM32F427X) || defined(STM32F429X)
@@ -147,21 +147,21 @@
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_rng.h"
 #define USE_HW_RNG  /*!<  HW RNG is present */
-#endif 
+#endif
 
 /* F4 without TRNG */
 #if defined (STM32F40XX)
 #define CL_ON_STM32 /*!< STM32 Directive has been found  */
 #include "stm32f4xx.h"
 #include "stm32f4xx_rcc.h"
-#endif  
+#endif
 
 /* L1 */
 #if defined (STM32L1XX_MD) || defined (STM32L1XX_MDP) || defined (STM32L1XX_HD)
 #define CL_ON_STM32 /*!< STM32 Directive has been found  */
 #include "stm32l1xx.h"
 #include "stm32l1xx_rcc.h"
-#endif 
+#endif
 
 /*************************************************************************************************
 ***-*-*-*-*--**- FAMILIES WITH HW CRYPTO -**--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-***
@@ -207,7 +207,7 @@
 /* If there is HW AES support include hw implementations */
 #if defined(USE_HW_AES_128) || defined(USE_HW_AES_192) || defined(USE_HW_AES_256)
 #define USE_HW_AES   /*!< There is support for HW AES  */
-#endif 
+#endif
 
 /* If hw supports all keys sizes then prepare to exclude software */
 #if defined(USE_HW_AES_128) && defined(USE_HW_AES_192) && defined(USE_HW_AES_256)
@@ -217,7 +217,7 @@
 #define USE_SW_AES   /*!< AES is implemented in SW  */
 #endif
 
-#ifndef USE_HW_DES  
+#ifndef USE_HW_DES
 #define USE_SW_DES   /*!< DES/TDES is implemented in SW  */
 #endif
 
@@ -291,19 +291,19 @@
 extern void Crypto_DeInit(void);
 
 extern int32_t STM32_AES_CTR_Decrypt(uint8_t*  InputMessage,
-                        uint32_t  InputMessageLength,
-                        uint8_t  *AES128_Key,
-                        uint8_t  *InitializationVector,
-                        uint32_t  IvLength,
-                        uint8_t  *OutputMessage,
-                        uint32_t *OutputMessageLength);
+                                     uint32_t  InputMessageLength,
+                                     uint8_t  *AES128_Key,
+                                     uint8_t  *InitializationVector,
+                                     uint32_t  IvLength,
+                                     uint8_t  *OutputMessage,
+                                     uint32_t *OutputMessageLength);
 extern int32_t STM32_AES_CTR_Encrypt(uint8_t*  InputMessage,
-                        uint32_t  InputMessageLength,
-                        uint8_t  *AES128_Key,
-                        uint8_t  *InitializationVector,
-                        uint32_t  IvLength,
-                        uint8_t  *OutputMessage,
-                        uint32_t *OutputMessageLength);
+                                     uint32_t  InputMessageLength,
+                                     uint8_t  *AES128_Key,
+                                     uint8_t  *InitializationVector,
+                                     uint32_t  IvLength,
+                                     uint8_t  *OutputMessage,
+                                     uint32_t *OutputMessageLength);
 
 extern uint8_t Key[CRL_AES128_KEY];
 extern uint8_t IV[CRL_AES_BLOCK];

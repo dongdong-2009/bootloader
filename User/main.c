@@ -105,23 +105,23 @@ void copy_from_app(void)
     u16 temp=0;
     for(u8 i=0; i<19; i++)
         {
-            temp=flash_read_halfword(0x0803F000+(i<<1));
+            temp=flash_read_halfword(appUpdateIfoAddress+(i<<1));
             parameter_app[i]=temp;
             if(i>=2)
                 {
                     txBuffer[i+3] = temp & 0x00FF;
                 }
-            
+
         }
-        FLASH_ErasePage(bootUpdateIfoAddress);
-        flash_write(bootUpdateIfoAddress,parameter_app,24);
+    FLASH_ErasePage(bootUpdateIfoAddress);
+    flash_write(bootUpdateIfoAddress,parameter_app,24);
 }
 
 void crc_7c(u8 * buf,u16 len)
 {
     *(buf+len-1)=0x7c;
     addcrc(buf,len);
-    len=trans_7c_set(buf,len);
+    trans_7c_set(buf,len);
 }
 
 void data_wifi_processed(u8 * buf,u16 len)
@@ -129,7 +129,7 @@ void data_wifi_processed(u8 * buf,u16 len)
     addAES(buf+1,len-4);
     *(buf+len-1)=0x7c;
     addcrc(buf,len);
-    len=trans_7c_set(buf,len);
+    trans_7c_set(buf,len);
 }
 
 bool delay(u32 timeout)
@@ -151,10 +151,10 @@ bool delay(u32 timeout)
 
 
 bool delay_u1(u32 timeout)
-{      
-            for(u32 i=0; i<timeout/10; i++)
+{
+    for(u32 i=0; i<timeout/10; i++)
         {
-            if(1!=receive_salver)
+            if(1!=receive_slave)
                 {
                     Delay_us(10);
                 }
@@ -186,7 +186,7 @@ u16 sa_dat_process(u8 *p,u16 len)
 }
 
 
-u8 update_salver(void)
+u8 _update_slave(void)
 {
     u8 err_sa=0;
     usart1_conf(115200);
@@ -198,30 +198,32 @@ u8 update_salver(void)
     crc_7c(send_data,25);
 resend_sa:
     before_send_sa();
-    MASTER_SEND(send_data,25);
+    MASTER_SEND(send_data,u1_bufferindex);
     if(true==delay_u1(100000))
         {
-            //数据处理
-            if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
-                {
+//            //数据处理
+//            if(sa_dat_process(u1_buffer,25)>0)
+//                {
 
-                    //接收到从机的确认升级
-                    if((0xA4==u1_buffer[3])&&(0==memcmp(&send_data[5],&u1_buffer[5],17)))
-                        {
-                            //接受数据正常
-                            return 0;
-                        }
-                    else     //异常
-                        {
-                            err_sa++;
-                            if(err_sa<10)
-                                {
-                                    goto resend_sa;
-                                }
-                            return 2;
-                        }
-                }
-            return 3;
+//                    //接收到从机的确认升级
+//                    if((0xA4==u1_buffer[3]))
+//                        {
+//                            //接受数据正常
+//                            before_send_sa();
+//                            return 0;
+//                        }
+//                    else     //异常
+//                        {
+//                            err_sa++;
+//                            if(err_sa<10)
+//                                {
+//                                    goto resend_sa;
+//                                }
+//                            return 2;
+//                        }
+//                }
+//            return 3;
+            return 0;
         }
     else
         {
@@ -295,7 +297,7 @@ int main(void)
 {
 
 
-     u8 updateinfo = 0;
+    u8 updateinfo = 0;
     /* LED 端口初始化 */
     clock_init();
 
@@ -306,71 +308,80 @@ int main(void)
     SysTick_Init();
 
     Flash_Init();
-    
+
     usart1_conf(115200);
 
     if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress))
         {
             FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
-        }       
-    if(0==flash_read_halfword(bootAppUpdateStausAddress))
+        }
+    u8 up_info=flash_read_halfword(bootAppUpdateStausAddress);
+    //if(0==flash_read_halfword(bootAppUpdateStausAddress))
+    if((0==(update_master&up_info))||(0==(update_master_backup&up_info))||(0==(update_slave&up_info)))
         {
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-//                    updateinfo=0X02;//模拟测试升级从机
+                    updateinfo=update_slave;             //模拟测试升级从机板
                     if(update_master==(update_master&updateinfo))
                         {
-                            if(update_master_NO1==(update_master_NO1&updateinfo))
+                            //更新程序
+                            copy_from_app();//需要更新的信息拷贝过来
+                            if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
                                 {
-                                    //更新程序
-                    copy_from_app();//需要更新的信息拷贝过来
-                    if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20])) {
-                        write_flage(isbackup,isbackup,0);
-                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
-                        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,1);//将boot更新完成的标志置1
-                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
-                        write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
-                        write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
-                        NVIC_SystemReset();
-                    } else { //更新失败
-                        u8 _count=flash_read_halfword(bootAppNumAddress);
-                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
-                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
-                        NVIC_SystemReset();
-                    }
+                                    write_flage(isbackup,isbackup,0);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
+                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                    info|=update_master;
+                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
+                                    write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
+                                    write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+//                                    NVIC_SystemReset();
+                                }
+                            else     //更新失败
+                                {
+                                    u8 _count=flash_read_halfword(bootAppNumAddress);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                    NVIC_SystemReset();
+                                }
+                        }
+                    if(update_master_backup==(update_master_backup&updateinfo))
+                        {
+                            copy_from_app();//需要更新的信息拷贝过来
+                            //更新程序
+                            if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
+                                {
+                                    write_flage(isbackup,isbackup,1);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
+                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                    info|=update_master_backup;
+                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
+                                    write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
+                                    write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+//                                    NVIC_SystemReset();
                                 }
                             else
-                                {       
-                    copy_from_app();//需要更新的信息拷贝过来
-                    //更新程序
-                    if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20])) {
-                        write_flage(isbackup,isbackup,1);
-                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
-                        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,1);//将boot更新完成的标志置1
-                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
-                        write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
-                        write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
-                        NVIC_SystemReset();
-                    } else {
-                        u8 _count=flash_read_halfword(bootAppNumAddress);
-                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
-                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
-                        NVIC_SystemReset();
-                    }
-
+                                {
+                                    u8 _count=flash_read_halfword(bootAppNumAddress);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                    NVIC_SystemReset();
                                 }
 
                         }
-                    else if(update_slave==(update_slave&updateinfo))
+
+                    if(update_slave==(update_slave&updateinfo))
                         {
                             u8 __err=0;
-                            if(0==update_salver())   //从机升级应答正常
+                            if(0==_update_slave())   //从机升级应答正常
                                 {
                                     while(1)
                                         {
 u1_rec_ok:
-                                            if(1==receive_salver)
+                                            if(1==receive_slave)
                                                 {
                                                     if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
                                                         {
@@ -380,13 +391,13 @@ u1_rec_ok:
 re:
                                                                     before_send_uart4();
                                                                     wifi_send(u1_buffer,27);
-                                                                    bool temp=delay(100);
+                                                                    bool temp=delay(1000);
                                                                     if(temp==true)   //接收成功
                                                                         {
                                                                             if(receiveDataPakageProcess(buffer,bufferindex))   //数据校验正确
                                                                                 {
                                                                                     crc_7c(buffer,bufferindex);
-__re_send_sa:
+__re_send_slave:
                                                                                     before_send_sa();
                                                                                     MASTER_SEND(buffer,bufferindex);
                                                                                     if(true==delay_u1(1000))
@@ -399,7 +410,7 @@ __re_send_sa:
                                                                                             __err++;
                                                                                             if(__err<5)
                                                                                                 {
-                                                                                                    goto __re_send_sa;
+                                                                                                    goto __re_send_slave;
                                                                                                 }
                                                                                             goto jump;
                                                                                         }
@@ -424,6 +435,10 @@ __re_send_sa:
                                                                 }
                                                             else if(0xFF==u1_buffer[3])     //更新完成，重启
                                                                 {
+                                                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                                                    info|=update_slave;
+                                                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                                                    goto reboot;
                                                                 }
                                                         }
                                                 }
@@ -434,40 +449,39 @@ __re_send_sa:
                                     goto jump;
                                 }
                         }
+
                 }
-            else
-                {
-                    goto jump;
-                }
+
         }
+
     else     //将boot的更新完成指令写成0，然后跳转到相应的程序中去
         {
             write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);//将boot更新完成的标志置1
             goto jump;
         }
-        
-jump:       
+
+jump:
+    USART_DeInit(USART1);
+    USART_DeInit(UART4);
+    FLASH_Lock();
     if(1==flash_read_halfword(isbackup))
         {
-            USART_DeInit(USART1);
-            USART_DeInit(UART4);
             iap_Loader_App(appBackStartAdress);
         }
     else
         {
-            USART_DeInit(USART1);
-            USART_DeInit(UART4);
             iap_Loader_App(appStartAdress);
         }
-//restart:
-//        NVIC_SystemReset();
+reboot:
+    NVIC_SystemReset();
+        
     for(;;)
         {
             LED1(0);
             Delay_us(10000);
             LED1(1);
             Delay_us(10000);
-            
+
         }
 }
 /*********************************************END OF FILE**********************/

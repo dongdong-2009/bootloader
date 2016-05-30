@@ -134,7 +134,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -154,7 +153,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U4294967295 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F10x_CL -FS08000000 -FL040000</Name>
+          <Name>-U17935099 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F10x_CL -FS08000000 -FL040000</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -166,90 +165,88 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>98</LineNumber>
+          <LineNumber>378</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134226262</Address>
+          <Address>134219234</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\bootloader\Project\BSP\UART\uart1.c</Filename>
+          <Filename>C:\Users\MSC\Desktop\Working\IAP\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../BSP/UART/uart1.c\98</Expression>
+          <Expression>\\bootloader\../../User/main.c\378</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>379</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134219236</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Users\MSC\Desktop\Working\IAP\IAP\master\bootloader\Project\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\bootloader\../../User/main.c\379</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>201</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134218500</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Users\MSC\Desktop\Working\IAP\IAP\master\bootloader\Project\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\bootloader\../../User/main.c\201</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>202</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134218510</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Users\MSC\Desktop\Working\IAP\IAP\master\bootloader\Project\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\bootloader\../../User/main.c\202</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>txBuffer</ItemText>
+          <ItemText>receive_salver</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>send_data</ItemText>
+          <ItemText>u1_buffer</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>buffer</ItemText>
+          <ItemText>u1_bufferindex</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TimingDelay</ItemText>
-        </Ww>
-        <Ww>
-          <count>4</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>temp</ItemText>
-        </Ww>
-        <Ww>
-          <count>5</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>i</ItemText>
-        </Ww>
-        <Ww>
-          <count>6</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>write_flage</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>temp_flag</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>index</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>TimingDelay</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>u1_buffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>receive_salver</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>u1_bufferindex</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\bootloader\../../BSP/UART/uart1.c\u1_buffer</ItemText>
+          <ItemText>send_data</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -389,7 +386,7 @@
 
   <Group>
     <GroupName>BSP</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

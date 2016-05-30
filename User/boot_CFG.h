@@ -1,11 +1,10 @@
 #ifndef __BOOT_CFG__H
 #define __BOOT_CFG__H
 
-#define update_master 0x0020
-#define update_master_NO1 0x0010
+#define update_master 0x0001
+#define update_master_backup 0x0010
 
 #define update_slave 0x0002
-#define update_slave_NO1 0x0001
 
 #define packge_size 1024
 

@@ -8,9 +8,9 @@
 
 u8 u1_buffer[2048];
 
-u8 is_salver=0;
+u8 is_slave=0;
 u32 u1_bufferindex=0;;
-u8 receive_salver=0;
+u8 receive_slave=0;
 
 void usart1_conf(u32 baud_rate)
 {
@@ -76,28 +76,24 @@ void USART1_IRQHandler(void)
 
             u8 dat = USART_ReceiveData(USART1);
 //            USART1_SEND_CHAR(dat);
-             USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-            if(1==is_salver )
+            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+            if(1==is_slave )
                 {
                     if(0x7c==dat )  //判断一下是不是一帧数据
                         {
 
                             if(u1_bufferindex<10)//数据帧起始字节
                                 {
-                                    is_salver=1;
+                                    is_slave=1;
                                     u1_bufferindex=0;
                                     u1_buffer[u1_bufferindex++]=dat;
                                     USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-                                   
                                 }
                             else
                                 {
-                                    is_salver=0;
-                                    receive_salver=1;
-                                    u1_buffer[u1_bufferindex]=dat;
-                                    u1_bufferindex=0;
-                                   
-
+                                    is_slave=0;
+                                    receive_slave=1;
+                                    u1_buffer[u1_bufferindex++]=dat;
                                 }
                         }
 
@@ -105,14 +101,14 @@ void USART1_IRQHandler(void)
                         {
                             u1_buffer[u1_bufferindex++]=dat;
                         }
-                 return ;
+                    return ;
                 }
             if(0x7c==dat)
                 {
-                    is_salver=1;
+                    is_slave=1;
                     u1_buffer[u1_bufferindex++]=dat;
                 }
-           
+
         }
 }
 
@@ -128,8 +124,8 @@ void MASTER_SEND(u8 * buf,u32 len)
 void before_send_sa(void)
 {
     memset(u1_buffer,0,2048);
-    receive_salver=0;
-    is_salver =0;
+    receive_slave=0;
+    is_slave =0;
     u1_bufferindex=0;
 
 }

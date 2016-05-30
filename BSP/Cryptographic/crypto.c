@@ -9,14 +9,16 @@
 typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 
 /* Key to be used for AES encryption/decryption */
-uint8_t Key[CRL_AES128_KEY] = {
+uint8_t Key[CRL_AES128_KEY] =
+{
     0xa0, 0x5a, 0x93, 0x83, 0x46, 0xb4, 0x56, 0xb8,
     0xe2, 0x55, 0x4e, 0xfa, 0x33, 0x55, 0x91, 0x57
 };
 //a0 5a 93 83 46 b4 56 b8 e2 55 4e fa 33 55 91 57
 
 /* Initialization Vector, used only in non-ECB modes */
-uint8_t IV[CRL_AES_BLOCK] = {
+uint8_t IV[CRL_AES_BLOCK] =
+{
     0xf0 , 0xf1 , 0xf2 , 0xf3 , 0xf4 , 0xf5 , 0xf6 , 0xf7,
     0xf8 , 0xf9 , 0xfa , 0xfb , 0xfc , 0xfd , 0xfe , 0xff
 };
@@ -97,23 +99,25 @@ int32_t STM32_AES_CTR_Encrypt(uint8_t* InputMessage,
     error_status = AES_CTR_Encrypt_Init(&AESctx, AES128_Key, InitializationVector );
 
     /* check for initialization errors */
-    if (error_status == AES_SUCCESS) {
-        /* Encrypt Data */
-        error_status = AES_CTR_Encrypt_Append(&AESctx,
-                                              InputMessage,
-                                              InputMessageLength,
-                                              OutputMessage,
-                                              &outputLength);
+    if (error_status == AES_SUCCESS)
+        {
+            /* Encrypt Data */
+            error_status = AES_CTR_Encrypt_Append(&AESctx,
+                                                  InputMessage,
+                                                  InputMessageLength,
+                                                  OutputMessage,
+                                                  &outputLength);
 
-        if (error_status == AES_SUCCESS) {
-            /* Write the number of data written*/
-            *OutputMessageLength = outputLength;
-            /* Do the Finalization */
-            error_status = AES_CTR_Encrypt_Finish(&AESctx, OutputMessage + *OutputMessageLength, &outputLength);
-            /* Add data written to the information to be returned */
-            *OutputMessageLength += outputLength;
+            if (error_status == AES_SUCCESS)
+                {
+                    /* Write the number of data written*/
+                    *OutputMessageLength = outputLength;
+                    /* Do the Finalization */
+                    error_status = AES_CTR_Encrypt_Finish(&AESctx, OutputMessage + *OutputMessageLength, &outputLength);
+                    /* Add data written to the information to be returned */
+                    *OutputMessageLength += outputLength;
+                }
         }
-    }
 
     return error_status;
 }
@@ -162,23 +166,25 @@ int32_t STM32_AES_CTR_Decrypt(uint8_t* InputMessage,
     error_status = AES_CTR_Decrypt_Init(&AESctx, AES128_Key, InitializationVector );
 
     /* check for initialization errors */
-    if (error_status == AES_SUCCESS) {
-        /* Decrypt Data */
-        error_status = AES_CTR_Decrypt_Append(&AESctx,
-                                              InputMessage,
-                                              InputMessageLength,
-                                              OutputMessage,
-                                              &outputLength);
+    if (error_status == AES_SUCCESS)
+        {
+            /* Decrypt Data */
+            error_status = AES_CTR_Decrypt_Append(&AESctx,
+                                                  InputMessage,
+                                                  InputMessageLength,
+                                                  OutputMessage,
+                                                  &outputLength);
 
-        if (error_status == AES_SUCCESS) {
-            /* Write the number of data written*/
-            *OutputMessageLength = outputLength;
-            /* Do the Finalization */
-            error_status = AES_CTR_Decrypt_Finish(&AESctx, OutputMessage + *OutputMessageLength, &outputLength);
-            /* Add data written to the information to be returned */
-            *OutputMessageLength += outputLength;
+            if (error_status == AES_SUCCESS)
+                {
+                    /* Write the number of data written*/
+                    *OutputMessageLength = outputLength;
+                    /* Do the Finalization */
+                    error_status = AES_CTR_Decrypt_Finish(&AESctx, OutputMessage + *OutputMessageLength, &outputLength);
+                    /* Add data written to the information to be returned */
+                    *OutputMessageLength += outputLength;
+                }
         }
-    }
 
     return error_status;
 }
@@ -192,14 +198,16 @@ int32_t STM32_AES_CTR_Decrypt(uint8_t* InputMessage,
   */
 TestStatus Buffercmp(const uint8_t* pBuffer, uint8_t* pBuffer1, uint16_t BufferLength)
 {
-    while (BufferLength--) {
-        if (*pBuffer != *pBuffer1) {
-            return FAILED;
-        }
+    while (BufferLength--)
+        {
+            if (*pBuffer != *pBuffer1)
+                {
+                    return FAILED;
+                }
 
-        pBuffer++;
-        pBuffer1++;
-    }
+            pBuffer++;
+            pBuffer1++;
+        }
 
     return PASSED;
 }

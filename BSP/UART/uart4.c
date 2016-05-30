@@ -87,7 +87,7 @@ void UART4_IRQHandler(void)
         {
             if(0x7c==dat)
                 {
-                    buffer[bufferindex]=dat;
+                    buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
                 }
@@ -95,7 +95,7 @@ void UART4_IRQHandler(void)
                 {
                     buffer[bufferindex++]=dat;
                 }
-         return ;
+            return ;
         }
     if(0x7c==dat)
         {

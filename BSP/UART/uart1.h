@@ -2,7 +2,7 @@
 #define __UART1__H
 #include "stm32f10x.h"
 
-extern u8 receive_salver;
+extern u8 receive_slave;
 extern u8 u1_buffer[2048];
 extern u32 u1_bufferindex;
 void usart1_conf(u32 baud_rate);
