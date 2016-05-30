@@ -198,7 +198,7 @@ u8 _update_slave(void)
     crc_7c(send_data,25);
 resend_sa:
     before_send_sa();
-    MASTER_SEND(send_data,u1_bufferindex);
+    MASTER_SEND(send_data,25);
     if(true==delay_u1(100000))
         {
 //            //数据处理
@@ -322,7 +322,7 @@ int main(void)
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-                    updateinfo=update_slave;             //模拟测试升级从机板
+//                    updateinfo=update_slave;             //模拟测试升级从机板
                     if(update_master==(update_master&updateinfo))
                         {
                             //更新程序

@@ -15,7 +15,7 @@
 #define appBackStartAdress          0x0801C000              //预留80k
 //写参数的地址
 #define paraAddress                 0x08032000              //number 101 page
-#define test_addr                 0x08032003              //number 101 page
+#define test_addr                   0x08032003              //number 101 page
 
 #define pBLOCK 128 
  //boot程序更新状态相关的地址
