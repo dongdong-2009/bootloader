@@ -34,6 +34,7 @@
 #define bootNewVerFlagAddress       0x0803E02A              //Boot最新程序的版本有效标志
 #define bootVerByte_1_Add           0x0803E02C              //Boot最新程序版本第一字节
 #define bootVerByte_2_Add           0x0803E02E              //Boot最新程序版本第二字节
+#define boot_location_flag          0x0803E03A              //本地的重启标志
 				
 				
 #define appComIDAddress             0x0803F004              //运营商ID号地址

@@ -311,13 +311,12 @@ int main(void)
 
     usart1_conf(115200);
 
-    if(0xFFFF==flash_read_halfword(bootAppUpdateStausAddress))
+    if(0xFFFF==flash_read_halfword(boot_location_flag))
         {
-            FLASH_ProgramHalfWord(bootAppUpdateStausAddress,0);
+            FLASH_ProgramHalfWord(boot_location_flag,0);
         }
-    u8 up_info=flash_read_halfword(bootAppUpdateStausAddress);
-    //if(0==flash_read_halfword(bootAppUpdateStausAddress))
-    if((0==(update_master&up_info))||(0==(update_master_backup&up_info))||(0==(update_slave&up_info)))
+    u8 up_info=flash_read_halfword(boot_location_flag);
+    if(0==up_info)
         {
             if(true==is_protocol())
                 {
@@ -337,6 +336,7 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
                                     write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
                                     write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
 //                                    NVIC_SystemReset();
                                 }
                             else     //更新失败
@@ -344,6 +344,7 @@ int main(void)
                                     u8 _count=flash_read_halfword(bootAppNumAddress);
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     NVIC_SystemReset();
                                 }
                         }
@@ -361,6 +362,7 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
                                     write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
                                     write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
 //                                    NVIC_SystemReset();
                                 }
                             else
@@ -368,6 +370,7 @@ int main(void)
                                     u8 _count=flash_read_halfword(bootAppNumAddress);
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     NVIC_SystemReset();
                                 }
 
@@ -412,6 +415,7 @@ __re_send_slave:
                                                                                                 {
                                                                                                     goto __re_send_slave;
                                                                                                 }
+                                                                                            write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                                                                             goto jump;
                                                                                         }
                                                                                 }
@@ -422,6 +426,8 @@ __re_send_slave:
                                                                                         {
                                                                                             goto re;
                                                                                         }
+                                                                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                                                                    goto jump;
                                                                                 }
                                                                         }
                                                                     else     //接收失败
@@ -431,6 +437,8 @@ __re_send_slave:
                                                                                 {
                                                                                     goto re;
                                                                                 }
+                                                                            write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                                                            goto jump;
                                                                         }
                                                                 }
                                                             else if(0xFF==u1_buffer[3])     //更新完成，重启
@@ -438,7 +446,8 @@ __re_send_slave:
                                                                     u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
                                                                     info|=update_slave;
                                                                     write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-                                                                    goto reboot;
+                                                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+                                                                    goto jump;
                                                                 }
                                                         }
                                                 }
@@ -449,18 +458,19 @@ __re_send_slave:
                                     goto jump;
                                 }
                         }
-
                 }
-
         }
-
     else     //将boot的更新完成指令写成0，然后跳转到相应的程序中去
         {
-            write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);//将boot更新完成的标志置1
+            write_flage(bootUpdateIfoAddress,boot_location_flag,0);//将boot更新完成的标志置1
             goto jump;
         }
 
 jump:
+    if(1==flash_read_halfword(boot_location_flag)) //有更新
+        {
+            goto reboot;
+        }
     USART_DeInit(USART1);
     USART_DeInit(UART4);
     FLASH_Lock();
@@ -474,14 +484,13 @@ jump:
         }
 reboot:
     NVIC_SystemReset();
-        
+
     for(;;)
         {
             LED1(0);
             Delay_us(10000);
             LED1(1);
             Delay_us(10000);
-
         }
 }
 /*********************************************END OF FILE**********************/
