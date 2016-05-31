@@ -73,6 +73,10 @@ u8 checkcrc(u8 *ptr,u16 len)
 {
 //	uint lengh;
     u16 crctmp;
+//    if(len<4)
+//    {
+//        return 0;
+//    }
     crctmp=crc_table(ptr,len-3);
     if(	((crctmp==(*(ptr+len-3))*256+(*(ptr+len-2))))
             ||(crctmp==(*(ptr+len-2))*256+(*(ptr+len-3))))

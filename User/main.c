@@ -117,29 +117,37 @@ void copy_from_app(void)
     flash_write(bootUpdateIfoAddress,parameter_app,24);
 }
 
-void crc_7c(u8 * buf,u16 len)
+u16 crc_7c(u8 * buf,u16 len)
 {
     *(buf+len-1)=0x7c;
     addcrc(buf,len);
-    trans_7c_set(buf,len);
+    return trans_7c_set(buf,len);
 }
 
-void data_wifi_processed(u8 * buf,u16 len)
+u16 data_wifi_processed(u8 * buf,u16 len)
 {
     addAES(buf+1,len-4);
     *(buf+len-1)=0x7c;
     addcrc(buf,len);
-    trans_7c_set(buf,len);
+    return trans_7c_set(buf,len);
 }
 
+
+void __delay(int time)
+{
+    for(u32 i=0;i<time;i++)
+    {
+        for(u32 j=0;j<1000;j++);
+    }
+}
 bool delay(u32 timeout)
 {
 
-    for(u32 i=0; i<timeout/10; i++)
+    for(u32 i=0; i<timeout; i++)
         {
             if(1!=receive_ok)
                 {
-                    Delay_us(10);
+                    Delay_us(1000);
                 }
             else
                 {
@@ -152,11 +160,11 @@ bool delay(u32 timeout)
 
 bool delay_u1(u32 timeout)
 {
-    for(u32 i=0; i<timeout/10; i++)
+    for(u32 i=0; i<timeout; i++)
         {
             if(1!=receive_slave)
                 {
-                    Delay_us(10);
+                    Delay_us(1000);
                 }
             else
                 {
@@ -189,17 +197,18 @@ u16 sa_dat_process(u8 *p,u16 len)
 u8 _update_slave(void)
 {
     u8 err_sa=0;
+    u16 len =0;
     usart1_conf(115200);
     //发送一条升级指令给从机
     copy_from_app();
     memcpy(send_data,txBuffer,25);
     send_data[1]=25;
     send_data[3]=0xA4;
-    crc_7c(send_data,25);
+    len = crc_7c(send_data,25);
 resend_sa:
     before_send_sa();
-    MASTER_SEND(send_data,25);
-    if(true==delay_u1(100000))
+    MASTER_SEND(send_data,len);
+    if(true==delay_u1(5000))
         {
 //            //数据处理
 //            if(sa_dat_process(u1_buffer,25)>0)
@@ -237,21 +246,29 @@ resend_sa:
 
 }
 
+void send_com(char* s,u16 __len)
+{
+    u16 len=0;
+    len=data_wifi_processed(send_data,__len);
+    before_send_uart4();
+    wifi_send(send_data,len);
+}
 
 u8 update_app(u32 addr,u32 package)
 {
     u8 error_count=0;
+    u16 len = 0;
     for(u16 i=1; i<=package; i++)
         {
 //        copy_from_app();
             memcpy(send_data,txBuffer,27);
             send_data[22]=i&0x00ff;
             send_data[23]=i>>8;
-            data_wifi_processed(send_data,27);
+            len=data_wifi_processed(send_data,27);
 resend:
             before_send_uart4();
-            wifi_send(send_data,27);
-            bool temp=delay(10000);
+            wifi_send(send_data,len);
+            bool temp=delay(5000);
             if(temp==true)   //接收成功
                 {
                     u16 __len=receiveDataPakageProcess(buffer,bufferindex);
@@ -296,7 +313,7 @@ u16 temp_=0;
 int main(void)
 {
 
-
+u16 len =0;
     u8 updateinfo = 0;
     /* LED 端口初始化 */
     clock_init();
@@ -321,7 +338,7 @@ int main(void)
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-//                    updateinfo=update_slave;             //模拟测试升级从机板
+                    updateinfo=update_master_backup;             //模拟测试升级从机板
                     if(update_master==(update_master&updateinfo))
                         {
                             //更新程序
@@ -390,20 +407,20 @@ u1_rec_ok:
                                                         {
                                                             if(0xA2==u1_buffer[3])
                                                                 {
-                                                                    data_wifi_processed(u1_buffer,27);
+                                                                    len=data_wifi_processed(u1_buffer,27);
 re:
                                                                     before_send_uart4();
-                                                                    wifi_send(u1_buffer,27);
-                                                                    bool temp=delay(1000);
+                                                                    wifi_send(u1_buffer,len);
+                                                                    bool temp=delay(5000);
                                                                     if(temp==true)   //接收成功
                                                                         {
                                                                             if(receiveDataPakageProcess(buffer,bufferindex))   //数据校验正确
                                                                                 {
-                                                                                    crc_7c(buffer,bufferindex);
+                                                                                    len=crc_7c(buffer,bufferindex);
 __re_send_slave:
                                                                                     before_send_sa();
-                                                                                    MASTER_SEND(buffer,bufferindex);
-                                                                                    if(true==delay_u1(1000))
+                                                                                    MASTER_SEND(buffer,len);
+                                                                                    if(true==delay_u1(5000))
                                                                                         {
                                                                                             //接收成功
                                                                                             goto u1_rec_ok;

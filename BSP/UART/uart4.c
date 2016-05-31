@@ -68,7 +68,6 @@ void before_send_uart4(void)
     bufferindex=0;
     receive_ok=0;
     memset(buffer,0,2048);
-
 }
 
 void UART4_IRQHandler(void)
@@ -81,21 +80,29 @@ void UART4_IRQHandler(void)
         }
 
     dat = USART_ReceiveData(UART4);
-
-    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
+//    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
+        
     if(1==isdata)
         {
             if(0x7c==dat)
                 {
+                    
+                    if(bufferindex<1000)
+                    {
+                    isdata=1;
+                    bufferindex=0;
+                    buffer[bufferindex++]=dat;    
+                    }
                     buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
+ 
                 }
             else
                 {
                     buffer[bufferindex++]=dat;
                 }
-            return ;
+            return;
         }
     if(0x7c==dat)
         {
