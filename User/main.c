@@ -6,7 +6,7 @@
 #include "Flash.h"
 #include <stdio.h>
 #include "boot_CFG.h"
-
+#include "stdbool.h"
 #include "crypto.h"
 #include "stm32f10x_rcc.h"
 #include "private.h"
@@ -15,6 +15,8 @@
 
 #define resend_times 5
 
+     u8 _is_baxk=0;
+     
 typedef  void (*pFunction)(void);
 u16 parameter_app[24];
 
@@ -53,7 +55,7 @@ u8 txBuffer[27] =
 
 pFunction Jump_To_Application;
 
-void iap_Loader_App(u32 ApplicationAddress)
+static void iap_Loader_App(u32 ApplicationAddress)
 {
     u32  JumpAddress;
     if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
@@ -88,7 +90,7 @@ void clock_init()
 }
 
 
-bool is_protocol(void)
+static bool is_protocol(void)
 {
     if((0x005A==flash_read_halfword(appUpdateIfoAddress))&&(0x00A5==flash_read_halfword(appUpdateIfoAddress+2)))
         {
@@ -100,7 +102,7 @@ bool is_protocol(void)
         }
 }
 
-void copy_from_app(void)
+static void copy_from_app(void)
 {
     u16 temp=0;
     for(u8 i=0; i<19; i++)
@@ -117,14 +119,14 @@ void copy_from_app(void)
     flash_write(bootUpdateIfoAddress,parameter_app,24);
 }
 
-u16 crc_7c(u8 * buf,u16 len)
+static u16 crc_7c(u8 * buf,u16 len)
 {
     *(buf+len-1)=0x7c;
     addcrc(buf,len);
     return trans_7c_set(buf,len);
 }
 
-u16 data_wifi_processed(u8 * buf,u16 len)
+static u16 data_wifi_processed(u8 * buf,u16 len)
 {
     addAES(buf+1,len-4);
     *(buf+len-1)=0x7c;
@@ -133,14 +135,14 @@ u16 data_wifi_processed(u8 * buf,u16 len)
 }
 
 
-void __delay(int time)
-{
-    for(u32 i=0;i<time;i++)
-    {
-        for(u32 j=0;j<1000;j++);
-    }
-}
-bool delay(u32 timeout)
+//static void __delay(int time)
+//{
+//    for(u32 i=0;i<time;i++)
+//    {
+//        for(u32 j=0;j<1000;j++);
+//    }
+//}
+static bool delay(u32 timeout)
 {
 
     for(u32 i=0; i<timeout; i++)
@@ -194,44 +196,22 @@ u16 sa_dat_process(u8 *p,u16 len)
 }
 
 
-u8 _update_slave(void)
+u8 info_slave(void)
 {
     u8 err_sa=0;
     u16 len =0;
-    usart1_conf(115200);
-    //发送一条升级指令给从机
     copy_from_app();
     memcpy(send_data,txBuffer,25);
     send_data[1]=25;
-    send_data[3]=0xA4;
+     send_data[17]=0x02;
+    //将升级指示标志改为1
+    send_data[3]=0xA3;
     len = crc_7c(send_data,25);
 resend_sa:
     before_send_sa();
     MASTER_SEND(send_data,len);
-    if(true==delay_u1(5000))
+    if(true==delay_u1(10000))
         {
-//            //数据处理
-//            if(sa_dat_process(u1_buffer,25)>0)
-//                {
-
-//                    //接收到从机的确认升级
-//                    if((0xA4==u1_buffer[3]))
-//                        {
-//                            //接受数据正常
-//                            before_send_sa();
-//                            return 0;
-//                        }
-//                    else     //异常
-//                        {
-//                            err_sa++;
-//                            if(err_sa<10)
-//                                {
-//                                    goto resend_sa;
-//                                }
-//                            return 2;
-//                        }
-//                }
-//            return 3;
             return 0;
         }
     else
@@ -246,29 +226,114 @@ resend_sa:
 
 }
 
-void send_com(char* s,u16 __len)
+bool slave_update(void)
 {
     u16 len=0;
-    len=data_wifi_processed(send_data,__len);
-    before_send_uart4();
-    wifi_send(send_data,len);
+    u8 __err=0;
+    if(0==info_slave())   //从机升级应答正常
+        {
+            while(1)
+                {
+u1_rec_ok:
+                    if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
+                        {
+                            if(0xA2==u1_buffer[3])
+                                {
+                                    len=data_wifi_processed(u1_buffer,27);
+re:
+                                    before_send_uart4();
+                                    wifi_send(u1_buffer,len);
+                                    bool temp=delay(5000);
+                                    if(temp==true)   //接收成功
+                                        {
+                                            len = receiveDataPakageProcess(buffer,bufferindex);
+                                            if(len>0)   //数据校验正确
+                                                {
+                                                    len=crc_7c(buffer,len);
+__re_send_slave:
+                                                    before_send_sa();
+                                                    MASTER_SEND(buffer,len);
+                                                    if(true==delay_u1(10000))
+                                                        {
+                                                            //接收成功
+                                                            goto u1_rec_ok;
+                                                        }
+                                                    else
+                                                        {
+                                                            __err++;
+                                                            if(__err<5)
+                                                                {
+                                                                    goto __re_send_slave;
+                                                                }
+
+                                                            return false;
+                                                        }
+                                                }
+                                            else     //失败
+                                                {
+                                                    __err++;
+                                                    if(__err<5)
+                                                        {
+                                                            goto re;
+                                                        }
+                                                    return false;
+                                                }
+                                        }
+                                    else     //接收失败
+                                        {
+                                            __err++;
+                                            if(__err<5)
+                                                {
+                                                    goto re;
+                                                }
+                                            return false;
+                                        }
+                                }
+                            else if(0xFF==u1_buffer[3])     //更新完成，重启
+                                {
+                                    return true;
+                                }
+                        }
+                    else     //接收失败
+                        {
+                            __err++;
+                            if(__err<5)
+                                {
+                                    goto re;
+                                }
+                            return false;
+                        }
+
+                }
+        }
+    else     //应答异常
+        {
+            return false;
+        }
 }
 
 u8 update_app(u32 addr,u32 package)
 {
     u8 error_count=0;
-    u16 len = 0;
+    u16 len=0;
+
     for(u16 i=1; i<=package; i++)
         {
 //        copy_from_app();
             memcpy(send_data,txBuffer,27);
+
+            send_data[17]=_is_baxk;    
+
             send_data[22]=i&0x00ff;
             send_data[23]=i>>8;
             len=data_wifi_processed(send_data,27);
 resend:
             before_send_uart4();
             wifi_send(send_data,len);
-            bool temp=delay(5000);
+
+//            send_com(send_data,27);
+
+            bool temp=delay(10000);
             if(temp==true)   //接收成功
                 {
                     u16 __len=receiveDataPakageProcess(buffer,bufferindex);
@@ -310,15 +375,16 @@ resend:
   * @retval 无
   */
 u16 temp_=0;
+u8 x=0x02;
+
 int main(void)
 {
-
-u16 len =0;
     u8 updateinfo = 0;
-    /* LED 端口初始化 */
+    
     clock_init();
 
-    led_Init();
+    led_Init();    
+    x^=0x02;
 
     Uart4_Init(115200);
 
@@ -338,9 +404,16 @@ u16 len =0;
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-                    updateinfo=update_master_backup;             //模拟测试升级从机板
+//                  updateinfo=0;//update_master;             //模拟测试升级从机板
+                    if(0==((updateinfo)&(update_master&update_master_backup&update_slave)))
+                    {   if(0!=flash_read_halfword(bootAppUpdateStausAddress))
+                        {
+                        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);
+                        }
+                    }
                     if(update_master==(update_master&updateinfo))
                         {
+                              _is_baxk=0x01;
                             //更新程序
                             copy_from_app();//需要更新的信息拷贝过来
                             if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
@@ -364,11 +437,12 @@ u16 len =0;
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     NVIC_SystemReset();
                                 }
+
                         }
                     if(update_master_backup==(update_master_backup&updateinfo))
                         {
-                            copy_from_app();//需要更新的信息拷贝过来
-                            //更新程序
+                            _is_baxk=0x10;
+                            copy_from_app();
                             if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
                                 {
                                     write_flage(isbackup,isbackup,1);
@@ -389,92 +463,32 @@ u16 len =0;
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     NVIC_SystemReset();
+                                    
                                 }
+
 
                         }
 
                     if(update_slave==(update_slave&updateinfo))
                         {
-                            u8 __err=0;
-                            if(0==_update_slave())   //从机升级应答正常
+
+                            if(true==slave_update())
                                 {
-                                    while(1)
-                                        {
-u1_rec_ok:
-                                            if(1==receive_slave)
-                                                {
-                                                    if(sa_dat_process(u1_buffer,u1_bufferindex)>0)
-                                                        {
-                                                            if(0xA2==u1_buffer[3])
-                                                                {
-                                                                    len=data_wifi_processed(u1_buffer,27);
-re:
-                                                                    before_send_uart4();
-                                                                    wifi_send(u1_buffer,len);
-                                                                    bool temp=delay(5000);
-                                                                    if(temp==true)   //接收成功
-                                                                        {
-                                                                            if(receiveDataPakageProcess(buffer,bufferindex))   //数据校验正确
-                                                                                {
-                                                                                    len=crc_7c(buffer,bufferindex);
-__re_send_slave:
-                                                                                    before_send_sa();
-                                                                                    MASTER_SEND(buffer,len);
-                                                                                    if(true==delay_u1(5000))
-                                                                                        {
-                                                                                            //接收成功
-                                                                                            goto u1_rec_ok;
-                                                                                        }
-                                                                                    else
-                                                                                        {
-                                                                                            __err++;
-                                                                                            if(__err<5)
-                                                                                                {
-                                                                                                    goto __re_send_slave;
-                                                                                                }
-                                                                                            write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                                                                            goto jump;
-                                                                                        }
-                                                                                }
-                                                                            else     //失败
-                                                                                {
-                                                                                    __err++;
-                                                                                    if(__err<5)
-                                                                                        {
-                                                                                            goto re;
-                                                                                        }
-                                                                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                                                                    goto jump;
-                                                                                }
-                                                                        }
-                                                                    else     //接收失败
-                                                                        {
-                                                                            __err++;
-                                                                            if(__err<5)
-                                                                                {
-                                                                                    goto re;
-                                                                                }
-                                                                            write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                                                            goto jump;
-                                                                        }
-                                                                }
-                                                            else if(0xFF==u1_buffer[3])     //更新完成，重启
-                                                                {
-                                                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
-                                                                    info|=update_slave;
-                                                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-                                                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
-                                                                    goto jump;
-                                                                }
-                                                        }
-                                                }
-                                        }
+                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                    info|=update_slave;
+                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
                                 }
-                            else     //应答异常
+                            else
                                 {
-                                    goto jump;
+                                    u8 _count=flash_read_halfword(bootAppNumAddress);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                    NVIC_SystemReset();
                                 }
+
                         }
+
                 }
         }
     else     //将boot的更新完成指令写成0，然后跳转到相应的程序中去

@@ -91,12 +91,13 @@ void UART4_IRQHandler(void)
                     {
                     isdata=1;
                     bufferindex=0;
-                    buffer[bufferindex++]=dat;    
+                    buffer[bufferindex++]=dat;
+                    return ;                        
                     }
                     buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
- 
+                                               
                 }
             else
                 {

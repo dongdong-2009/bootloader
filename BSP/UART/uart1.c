@@ -75,28 +75,23 @@ void USART1_IRQHandler(void)
         {
 
             u8 dat = USART_ReceiveData(USART1);
-//            USART1_SEND_CHAR(dat);
-            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+            
+//            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
             if(1==is_slave )
                 {
                     if(0x7c==dat )  //判断一下是不是一帧数据
                         {
-
                             if(u1_bufferindex<10)//数据帧起始字节
                                 {
                                     is_slave=1;
                                     u1_bufferindex=0;
                                     u1_buffer[u1_bufferindex++]=dat;
-                                    USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+                                    return ;
                                 }
-                            else
-                                {
                                     is_slave=0;
                                     receive_slave=1;
                                     u1_buffer[u1_bufferindex++]=dat;
-                                }
                         }
-
                     else
                         {
                             u1_buffer[u1_bufferindex++]=dat;
