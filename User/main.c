@@ -15,7 +15,7 @@
 
 #define resend_times 5
 
-     u8 _is_baxk=0;
+     u8 _is_back=0;
      
 typedef  void (*pFunction)(void);
 u16 parameter_app[24];
@@ -113,7 +113,6 @@ static void copy_from_app(void)
                 {
                     txBuffer[i+3] = temp & 0x00FF;
                 }
-
         }
     FLASH_ErasePage(bootUpdateIfoAddress);
     flash_write(bootUpdateIfoAddress,parameter_app,24);
@@ -210,14 +209,14 @@ u8 info_slave(void)
 resend_sa:
     before_send_sa();
     MASTER_SEND(send_data,len);
-    if(true==delay_u1(10000))
+    if(true==delay_u1(2000))
         {
             return 0;
         }
     else
         {
             err_sa++;
-            if(err_sa<10)
+            if(err_sa<err_threshold)
                 {
                     goto resend_sa;
                 }
@@ -230,7 +229,7 @@ bool slave_update(void)
 {
     u16 len=0;
     u8 __err=0;
-    if(0==info_slave())   //从机升级应答正常
+    if(0==info_slave())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
         {
             while(1)
                 {
@@ -322,7 +321,7 @@ u8 update_app(u32 addr,u32 package)
 //        copy_from_app();
             memcpy(send_data,txBuffer,27);
 
-            send_data[17]=_is_baxk;    
+            send_data[17]=_is_back;    
 
             send_data[22]=i&0x00ff;
             send_data[23]=i>>8;
@@ -375,7 +374,6 @@ resend:
   * @retval 无
   */
 u16 temp_=0;
-u8 x=0x02;
 
 int main(void)
 {
@@ -384,7 +382,6 @@ int main(void)
     clock_init();
 
     led_Init();    
-    x^=0x02;
 
     Uart4_Init(115200);
 
@@ -413,7 +410,7 @@ int main(void)
                     }
                     if(update_master==(update_master&updateinfo))
                         {
-                              _is_baxk=0x01;
+                              _is_back=0x01;
                             //更新程序
                             copy_from_app();//需要更新的信息拷贝过来
                             if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
@@ -435,13 +432,13 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    NVIC_SystemReset();
+                                    goto jump;
                                 }
 
                         }
                     if(update_master_backup==(update_master_backup&updateinfo))
                         {
-                            _is_baxk=0x10;
+                            _is_back=0x10;
                             copy_from_app();
                             if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
                                 {
@@ -462,7 +459,7 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    NVIC_SystemReset();
+                                    goto jump;
                                     
                                 }
 
@@ -484,9 +481,9 @@ int main(void)
                                     u8 _count=flash_read_halfword(bootAppNumAddress);
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    NVIC_SystemReset();
+                                    goto jump;
                                 }
-
+                                                
                         }
 
                 }

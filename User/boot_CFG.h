@@ -7,6 +7,7 @@
 #define update_slave 0x0002
 
 #define packge_size 1024
+#define err_threshold 10
 
 //FLASH地址
 #define STM32_FLASH_BASE            0x08000000 	            //STM32 FLASH的起始地
