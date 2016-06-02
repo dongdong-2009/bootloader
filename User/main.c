@@ -15,8 +15,8 @@
 
 #define resend_times 5
 
-     u8 _is_back=0;
-     
+u8 _is_back=0;
+
 typedef  void (*pFunction)(void);
 u16 parameter_app[24];
 
@@ -114,6 +114,10 @@ static void copy_from_app(void)
                     txBuffer[i+3] = temp & 0x00FF;
                 }
         }
+//    for(u8 j=0;j<50;j++)
+//    {
+//        parameter_app[j]=flash_read_halfword(appUpdateIfoAddress+(j<<1));
+//    }
     FLASH_ErasePage(bootUpdateIfoAddress);
     flash_write(bootUpdateIfoAddress,parameter_app,24);
 }
@@ -199,10 +203,10 @@ u8 info_slave(void)
 {
     u8 err_sa=0;
     u16 len =0;
-    copy_from_app();
+//    copy_from_app();
     memcpy(send_data,txBuffer,25);
     send_data[1]=25;
-     send_data[17]=0x02;
+    send_data[17]=0x02;
     //将升级指示标志改为1
     send_data[3]=0xA3;
     len = crc_7c(send_data,25);
@@ -321,7 +325,7 @@ u8 update_app(u32 addr,u32 package)
 //        copy_from_app();
             memcpy(send_data,txBuffer,27);
 
-            send_data[17]=_is_back;    
+            send_data[17]=_is_back;
 
             send_data[22]=i&0x00ff;
             send_data[23]=i>>8;
@@ -378,10 +382,10 @@ u16 temp_=0;
 int main(void)
 {
     u8 updateinfo = 0;
-    
+    u16 info=0;
     clock_init();
 
-    led_Init();    
+    led_Init();
 
     Uart4_Init(115200);
 
@@ -402,22 +406,33 @@ int main(void)
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
 //                  updateinfo=0;//update_master;             //模拟测试升级从机板
-                    if(0==((updateinfo)&(update_master&update_master_backup&update_slave)))
-                    {   if(0!=flash_read_halfword(bootAppUpdateStausAddress))
+                    if((update_master!=(update_master&updateinfo))\
+                            &&(update_master_backup!=(update_master_backup&updateinfo))\
+                            &&(update_slave!=(update_slave&updateinfo)))
                         {
-                        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);
+                            if(0!=flash_read_halfword(bootAppUpdateStausAddress))
+                                {
+                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);
+                                }
                         }
-                    }
+
+                    if((update_master==(update_master&updateinfo))\
+                            ||(update_master_backup==(update_master_backup&updateinfo))\
+                            ||(update_slave==(update_slave&updateinfo)))
+                        {
+                            copy_from_app();//需要更新的信息拷贝过来
+                        }
                     if(update_master==(update_master&updateinfo))
                         {
-                              _is_back=0x01;
+                            _is_back=0x01;
                             //更新程序
                             copy_from_app();//需要更新的信息拷贝过来
                             if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
                                 {
                                     write_flage(isbackup,isbackup,0);
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
-                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+//                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+
                                     info|=update_master;
                                     write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
@@ -439,7 +454,7 @@ int main(void)
                     if(update_master_backup==(update_master_backup&updateinfo))
                         {
                             _is_back=0x10;
-                            copy_from_app();
+//                            copy_from_app();
                             if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
                                 {
                                     write_flage(isbackup,isbackup,1);
@@ -460,7 +475,7 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     goto jump;
-                                    
+
                                 }
 
 
@@ -483,7 +498,7 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     goto jump;
                                 }
-                                                
+
                         }
 
                 }
