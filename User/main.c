@@ -292,10 +292,10 @@ __re_send_slave:
                                             return false;
                                         }
                                 }
-                                if(0xA3==u1_buffer[3])
-                                {
-                                   return false;
-                                }
+//                                if(0xA3==u1_buffer[3])
+//                                {
+//                                   return false;
+//                                }
                              if(0xFF==u1_buffer[3])     //更新完成，重启
                                 {
                                     return true;
