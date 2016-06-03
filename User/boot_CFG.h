@@ -18,6 +18,9 @@
 #define paraAddress                 0x08032000              //number 101 page
 #define test_addr                   0x08032003              //number 101 page
 
+#define boot_version                0x0803E800              //boot版本
+
+
 #define pBLOCK 128 
  //boot程序更新状态相关的地址
 #define bootUpdateIfoAddress        0x0803E000              //Number 102 page

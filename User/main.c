@@ -422,6 +422,10 @@ int main(void)
     Flash_Init();
 
     usart1_conf(115200);
+    if(0xFFFF==flash_read_halfword(boot_version))
+    {
+        write_flage(boot_version,boot_version,0x0202);
+    }
 
     if(0xFFFF==flash_read_halfword(boot_location_flag))
         {
@@ -514,17 +518,17 @@ int main(void)
 
                             if(true==slave_update())
                                 {
-//                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
-//                                    info|=update_slave;
-//                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-//                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
-//                                }
-//                            else
-//                                {
-//                                    u8 _count=flash_read_halfword(bootAppNumAddress);
-//                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
-//                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-//                                    goto jump;
+                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                    info|=update_slave;
+                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+                                }
+                            else
+                                {
+                                    u8 _count=flash_read_halfword(bootAppNumAddress);
+                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                    goto jump;
                                 }
                         }
 

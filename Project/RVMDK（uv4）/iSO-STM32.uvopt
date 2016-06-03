@@ -171,25 +171,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>315</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218536</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\315</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>319</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218540</Address>
+          <Address>134218766</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -201,11 +185,11 @@
           <Expression>\\bootloader\../../User/main.c\319</Expression>
         </Bp>
         <Bp>
-          <Number>2</Number>
+          <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>530</LineNumber>
+          <LineNumber>492</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219502</Address>
+          <Address>134219486</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -214,23 +198,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\530</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>526</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219494</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\526</Expression>
+          <Expression>\\bootloader\../../User/main.c\492</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -254,7 +222,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x0803F026</ItemText>
+          <ItemText>0x0803E800</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -262,7 +230,7 @@
         <Mm>
           <WinNumber>2</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x0803F000</ItemText>
+          <ItemText>0x0803F028</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow2>
@@ -272,7 +240,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
