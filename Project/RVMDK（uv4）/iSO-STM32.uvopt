@@ -133,6 +133,11 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>DLGUARM</Key>
+          <Name>/</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>DLGDARM</Key>
           <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
@@ -166,9 +171,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>529</LineNumber>
+          <LineNumber>315</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219716</Address>
+          <Address>134218536</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -177,14 +182,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\529</Expression>
+          <Expression>\\bootloader\../../User/main.c\315</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>525</LineNumber>
+          <LineNumber>319</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219708</Address>
+          <Address>134218540</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -193,14 +198,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\525</Expression>
+          <Expression>\\bootloader\../../User/main.c\319</Expression>
         </Bp>
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>406</LineNumber>
+          <LineNumber>530</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218990</Address>
+          <Address>134219502</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -209,14 +214,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\406</Expression>
+          <Expression>\\bootloader\../../User/main.c\530</Expression>
         </Bp>
         <Bp>
           <Number>3</Number>
           <Type>0</Type>
-          <LineNumber>488</LineNumber>
+          <LineNumber>526</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219554</Address>
+          <Address>134219494</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -225,103 +230,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\488</Expression>
-        </Bp>
-        <Bp>
-          <Number>4</Number>
-          <Type>0</Type>
-          <LineNumber>411</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219012</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\411</Expression>
-        </Bp>
-        <Bp>
-          <Number>5</Number>
-          <Type>0</Type>
-          <LineNumber>413</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219022</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\413</Expression>
-        </Bp>
-        <Bp>
-          <Number>6</Number>
-          <Type>0</Type>
-          <LineNumber>394</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218940</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\394</Expression>
-        </Bp>
-        <Bp>
-          <Number>7</Number>
-          <Type>0</Type>
-          <LineNumber>214</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218484</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\214</Expression>
-        </Bp>
-        <Bp>
-          <Number>8</Number>
-          <Type>0</Type>
-          <LineNumber>218</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218506</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\218</Expression>
-        </Bp>
-        <Bp>
-          <Number>9</Number>
-          <Type>0</Type>
-          <LineNumber>223</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218514</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\223</Expression>
+          <Expression>\\bootloader\../../User/main.c\526</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

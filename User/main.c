@@ -86,7 +86,7 @@ void clock_init()
         RCC_APB1Periph_UART5
         |RCC_APB1Periph_TIM3
         ,ENABLE);
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 }
 
 
@@ -226,6 +226,29 @@ resend_sa:
                 }
             return 1;//从机应答失败
         }
+//return false;
+
+}
+
+u8 __info(void)
+{
+
+    u16 len =0;
+    memcpy(send_data,txBuffer,25);
+    send_data[1]=25;
+    send_data[17]=0x02;
+    send_data[3]=0xA3;
+    len = crc_7c(send_data,25);
+    before_send_sa();
+    MASTER_SEND(send_data,len);
+    if(true==delay_u1(2000))
+        {
+            return 0;
+        }
+    else
+        {
+            return 1;//从机应答失败
+        }
 
 }
 
@@ -233,8 +256,9 @@ bool slave_update(void)
 {
     u16 len=0;
     u8 __err=0;
-    if(0==info_slave())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
+    if(0==__info())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
         {
+            
             while(1)
                 {
 u1_rec_ok:
@@ -292,10 +316,10 @@ __re_send_slave:
                                             return false;
                                         }
                                 }
-//                                if(0xA3==u1_buffer[3])
-//                                {
-//                                   return false;
-//                                }
+                                if(0xA3==u1_buffer[3])
+                                {
+                                   return false;
+                                }
                              if(0xFF==u1_buffer[3])     //更新完成，重启
                                 {
                                     return true;
@@ -490,17 +514,17 @@ int main(void)
 
                             if(true==slave_update())
                                 {
-                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
-                                    info|=update_slave;
-                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
-                                }
-                            else
-                                {
-                                    u8 _count=flash_read_halfword(bootAppNumAddress);
-                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
-                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    goto jump;
+//                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+//                                    info|=update_slave;
+//                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+//                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+//                                }
+//                            else
+//                                {
+//                                    u8 _count=flash_read_halfword(bootAppNumAddress);
+//                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+//                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+//                                    goto jump;
                                 }
                         }
 
@@ -513,6 +537,7 @@ int main(void)
         }
 
 jump:
+        	SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
     if(1==flash_read_halfword(boot_location_flag)) //有更新
         {
             goto reboot;
