@@ -292,7 +292,11 @@ __re_send_slave:
                                             return false;
                                         }
                                 }
-                            else if(0xFF==u1_buffer[3])     //更新完成，重启
+                                if(0xA3==u1_buffer[3])
+                                {
+                                   return false;
+                                }
+                             if(0xFF==u1_buffer[3])     //更新完成，重启
                                 {
                                     return true;
                                 }
@@ -498,7 +502,6 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
                                     goto jump;
                                 }
-
                         }
 
                 }
@@ -531,9 +534,9 @@ reboot:
     for(;;)
         {
             LED1(0);
-            Delay_us(10000);
+            Delay_us(100000);
             LED1(1);
-            Delay_us(10000);
+            Delay_us(100000);
         }
 }
 /*********************************************END OF FILE**********************/
