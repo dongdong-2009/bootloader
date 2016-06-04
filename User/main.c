@@ -258,7 +258,7 @@ bool slave_update(void)
     u8 __err=0;
     if(0==__info())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
         {
-            
+
             while(1)
                 {
 u1_rec_ok:
@@ -316,11 +316,11 @@ __re_send_slave:
                                             return false;
                                         }
                                 }
-                                if(0xA3==u1_buffer[3])
+                            if(0xA3==u1_buffer[3])
                                 {
-                                   return false;
+                                    return false;
                                 }
-                             if(0xFF==u1_buffer[3])     //更新完成，重启
+                            if(0xFF==u1_buffer[3])     //更新完成，重启
                                 {
                                     return true;
                                 }
@@ -423,9 +423,9 @@ int main(void)
 
     usart1_conf(115200);
     if(0xFFFF==flash_read_halfword(boot_version))
-    {
-        write_flage(boot_version,boot_version,0x0202);
-    }
+        {
+            write_flage(boot_version,boot_version,0x0202);
+        }
 
     if(0xFFFF==flash_read_halfword(boot_location_flag))
         {
@@ -541,7 +541,7 @@ int main(void)
         }
 
 jump:
-        	SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
+    SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;
     if(1==flash_read_halfword(boot_location_flag)) //有更新
         {
             goto reboot;
