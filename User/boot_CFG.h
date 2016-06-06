@@ -15,18 +15,20 @@
 #define appStartAdress              0x08006000              //预留80K
 #define appBackStartAdress          0x0801C000              //预留80k
 //写参数的地址
-#define paraAddress                 0x08032000              //number 101 page
-#define test_addr                   0x08032003              //number 101 page
+
+
+//boot参数使用空间，   0x0803D000-0x0803F000
+
 
 #define boot_version                0x0803E800              //boot版本
 
 
 #define pBLOCK 128 
  //boot程序更新状态相关的地址
-#define bootUpdateIfoAddress        0x0803E000              //Number 102 page
-#define appUpdateIfoAddress         0x0803F000              //Number 103 page
+#define bootUpdateIfoAddress        0x0803E000              //Number 0 page
+#define appUpdateIfoAddress         0x0803F000              //Number 0 page
 
-#define isbackup                    0x08037400              //Number 110 page
+#define isbackup                    0x0803D000              
 
 
 #define bootAppComIDAddress         0x0803E004              //运营商ID号地址
@@ -39,8 +41,8 @@
 #define bootVerByte_1_Add           0x0803E02C              //Boot最新程序版本第一字节
 #define bootVerByte_2_Add           0x0803E02E              //Boot最新程序版本第二字节
 #define boot_location_flag          0x0803E03A              //本地的重启标志
-				
-				
+
+
 #define appComIDAddress             0x0803F004              //运营商ID号地址
 #define appCharCodeAddress          0x0803F008              //充电桩编码地址
 #define appVersionAddress           0x0803F01E              //已更新程序的版本

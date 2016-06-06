@@ -134,7 +134,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -159,7 +159,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U4294967295 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F10x_CL -FS08000000 -FL040000</Name>
+          <Name>-U17935099 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F10x_CL -FS08000000 -FL040000</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -171,34 +171,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>319</LineNumber>
+          <LineNumber>558</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218766</Address>
+          <Address>134219832</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\319</Expression>
+          <Expression>\\master_board_bootloader\../../User/main.c\558</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>492</LineNumber>
+          <LineNumber>554</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219486</Address>
+          <Address>134219824</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\Working\IAP\master\bootloader\Project\User\main.c</Filename>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\bootloader\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\bootloader\../../User/main.c\492</Expression>
+          <Expression>\\master_board_bootloader\../../User/main.c\554</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -222,7 +222,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x0803E800</ItemText>
+          <ItemText>0x08032000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
