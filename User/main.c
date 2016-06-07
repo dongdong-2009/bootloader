@@ -242,14 +242,14 @@ u8 __info(void)
     __re_info:
     before_send_sa();
     MASTER_SEND(send_data,len);
-    if(true==delay_u1(2000))
+    if(true==delay_u1(1000))
         {
             return 0;
         }
     else
         {
             err_num++;
-            if(err_num<2)
+            if(err_num<5)
             {
                 goto  __re_info;
             }
@@ -262,6 +262,7 @@ bool slave_update(void)
 {
     u16 len=0;
     u8 __err=0;
+    _re_info:
     if(0==__info())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
         {
 
@@ -329,6 +330,10 @@ __re_send_slave:
                             if(0xFF==u1_buffer[3])     //更新完成，重启
                                 {
                                     return true;
+                                }
+                                else
+                                {
+                                goto _re_info;
                                 }
                         }
                     else     //接收失败

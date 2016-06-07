@@ -179,7 +179,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\work\IAP\master\bootloader\Project\User\main.c</Filename>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\master_board_bootloader_version2\../../User/main.c\247</Expression>
         </Bp>
@@ -195,7 +195,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\work\IAP\master\bootloader\Project\User\main.c</Filename>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\master_board_bootloader_version2\../../User/main.c\254</Expression>
         </Bp>
