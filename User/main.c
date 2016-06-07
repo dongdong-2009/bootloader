@@ -232,13 +232,14 @@ resend_sa:
 
 u8 __info(void)
 {
-
+    u16 err_num=0;
     u16 len =0;
     memcpy(send_data,txBuffer,25);
     send_data[1]=25;
     send_data[17]=0x02;
     send_data[3]=0xA3;
     len = crc_7c(send_data,25);
+    __re_info:
     before_send_sa();
     MASTER_SEND(send_data,len);
     if(true==delay_u1(2000))
@@ -247,6 +248,11 @@ u8 __info(void)
         }
     else
         {
+            err_num++;
+            if(err_num<2)
+            {
+                goto  __re_info;
+            }
             return 1;//´Ó»úÓ¦´ðÊ§°Ü
         }
 
