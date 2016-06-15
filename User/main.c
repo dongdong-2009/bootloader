@@ -17,6 +17,8 @@
 
 u8 _is_back=0;
 
+//²âÊÔ°æ±¾¿ØÖÆ
+
 typedef  void (*pFunction)(void);
 u16 parameter_app[24];
 
