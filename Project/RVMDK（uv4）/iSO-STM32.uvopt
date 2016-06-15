@@ -133,10 +133,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>DLGDARM</Key>
           <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
@@ -170,22 +166,6 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>247</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218588</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\master_board_bootloader_version2\../../User/main.c\247</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>254</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>134218600</Address>
@@ -198,6 +178,38 @@
           <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\master_board_bootloader_version2\../../User/main.c\254</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>251</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134218592</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\master_board_bootloader_version2\../../User/main.c\251</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>247</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134218588</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Users\MSC\Desktop\work\IAP\master\Project\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\master_board_bootloader_version2\../../User/main.c\247</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
