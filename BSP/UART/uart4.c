@@ -80,6 +80,10 @@ void UART4_IRQHandler(void)
         }
 
     dat = USART_ReceiveData(UART4);
+        if(1==receive_ok)
+        {
+            return ;
+        }
 //    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
         
     if(1==isdata)

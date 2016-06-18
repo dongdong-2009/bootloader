@@ -77,6 +77,10 @@ void USART1_IRQHandler(void)
             u8 dat = USART_ReceiveData(USART1);
             
 //            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+            if(1==receive_slave)
+            {
+                return ;
+            }
             if(1==is_slave )
                 {
                     if(0x7c==dat )  //判断一下是不是一帧数据
