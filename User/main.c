@@ -239,7 +239,7 @@ u8 __info(void)
     send_data[17]=0x02;
     send_data[3]=0xA3;
     len = crc_7c(send_data,25);
-    __re_info:
+__re_info:
     before_send_sa();
     MASTER_SEND(send_data,len);
     if(true==delay_u1(1000))
@@ -250,9 +250,9 @@ u8 __info(void)
         {
             err_num++;
             if(err_num<5)
-            {
-                goto  __re_info;
-            }
+                {
+                    goto  __re_info;
+                }
             return 1;//从机应答失败
         }
 
@@ -262,7 +262,7 @@ bool slave_update(void)
 {
     u16 len=0;
     u8 __err=0;
-    _re_info:
+_re_info:
     if(0==__info())   //从机升级应答正常    此处有肯能出现第一次更新不成功，从夫发起的状况
         {
 
@@ -331,9 +331,9 @@ __re_send_slave:
                                 {
                                     return true;
                                 }
-                                else
+                            else
                                 {
-                                goto _re_info;
+                                    goto _re_info;
                                 }
                         }
                     else     //接收失败
@@ -358,10 +358,13 @@ u8 update_app(u32 addr,u32 package)
 {
     u8 error_count=0;
     u16 len=0;
+    u16 temp_pakge=0;
 
     for(u16 i=1; i<=package; i++)
         {
+            
 //        copy_from_app();
+            temp_pakge=i;
             memcpy(send_data,txBuffer,27);
 
             send_data[17]=_is_back;
@@ -381,11 +384,24 @@ resend:
                     u16 __len=receiveDataPakageProcess(buffer,bufferindex);
                     if(__len!=0)   //数据校验正确
                         {
-                            if(i%2)
+                            if((buffer[22]|buffer[23]<<8)==temp_pakge)
                                 {
-                                    FLASH_ErasePage(addr+(i-1)*packge_size);
+                                    if(i%2)
+                                        {
+                                            FLASH_ErasePage(addr+(i-1)*packge_size);
+                                        }
+                                    writeFlash(addr+(i-1)*packge_size,&buffer[24],__len-27);
                                 }
-                            writeFlash(addr+(i-1)*packge_size,&buffer[24],__len-27);
+                            else
+                                {
+                                    error_count++;
+                                    if(error_count<5)
+                                        {
+                                            goto resend;
+                                        }
+                                    return 1;
+
+                                }
                         }
                     else     //失败
                         {
