@@ -137,14 +137,6 @@ static u16 data_wifi_processed(u8 * buf,u16 len)
     return trans_7c_set(buf,len);
 }
 
-
-//static void __delay(int time)
-//{
-//    for(u32 i=0;i<time;i++)
-//    {
-//        for(u32 j=0;j<1000;j++);
-//    }
-//}
 static bool delay(u32 timeout)
 {
 
@@ -199,36 +191,36 @@ u16 sa_dat_process(u8 *p,u16 len)
 }
 
 
-u8 info_slave(void)
-{
-    u8 err_sa=0;
-    u16 len =0;
-//    copy_from_app();
-    memcpy(send_data,txBuffer,25);
-    send_data[1]=25;
-    send_data[17]=0x02;
-    //将升级指示标志改为1
-    send_data[3]=0xA3;
-    len = crc_7c(send_data,25);
-resend_sa:
-    before_send_sa();
-    MASTER_SEND(send_data,len);
-    if(true==delay_u1(2000))
-        {
-            return 0;
-        }
-    else
-        {
-            err_sa++;
-            if(err_sa<err_threshold)
-                {
-                    goto resend_sa;
-                }
-            return 1;//从机应答失败
-        }
-//return false;
+//u8 info_slave(void)
+//{
+//    u8 err_sa=0;
+//    u16 len =0;
+////    copy_from_app();
+//    memcpy(send_data,txBuffer,25);
+//    send_data[1]=25;
+//    send_data[17]=0x02;
+//    //将升级指示标志改为1
+//    send_data[3]=0xA3;
+//    len = crc_7c(send_data,25);
+//resend_sa:
+//    before_send_sa();
+//    MASTER_SEND(send_data,len);
+//    if(true==delay_u1(2000))
+//        {
+//            return 0;
+//        }
+//    else
+//        {
+//            err_sa++;
+//            if(err_sa<err_threshold)
+//                {
+//                    goto resend_sa;
+//                }
+//            return 1;//从机应答失败
+//        }
+////return false;
 
-}
+//}
 
 u8 __info(void)
 {
