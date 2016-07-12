@@ -29,6 +29,11 @@
 #define LED3_OFF			digitalHi(GPIOF,GPIO_Pin_8)
 #define LED3_ON				digitalLo(GPIOF,GPIO_Pin_8)
 
+void GSM_RST(void);
+
+void RST_Init(void);
+
+
 void led_Init(void);
 
 #endif /* __LED_H */

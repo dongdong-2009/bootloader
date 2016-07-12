@@ -52,4 +52,25 @@
 #define appVerByte_1_Add            0x0803F02A              //最新更新版本第一个字节          
 #define appVerByte_2_Add            0x0803F02C              //最新更新版本第二个字节
 
+typedef enum
+{
+    none,
+    normal,
+    init,
+    info_server
+
+}
+_bootsta;
+
+
+
+
+typedef struct
+{
+    _bootsta sta;
+    
+
+}
+_bootloader_type;
+
 #endif

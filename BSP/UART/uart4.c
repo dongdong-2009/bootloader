@@ -4,6 +4,10 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_gpio.h"
 #include "misc.h"
+#include "boot_CFG.h"
+
+extern _bootloader_type bootloader_step;
+
 #include "string.h"
 volatile u8 receive_ok=0;
 u8 buffer[2048];
@@ -80,28 +84,46 @@ void UART4_IRQHandler(void)
         }
 
     dat = USART_ReceiveData(UART4);
-        if(1==receive_ok)
+        
+    if(bootloader_step.sta==info_server)
+        {
+            if('P'==dat)
+            {
+                receive_ok=1;
+            }
+            return;
+        }
+    if(bootloader_step.sta==init)
+        {
+            if((0x0A==dat)&&(0x0D==buffer[bufferindex]))
+            {
+                receive_ok=1;
+            }
+            buffer[bufferindex++]=dat;
+            return;
+        }
+    if(1==receive_ok)
         {
             return ;
         }
 //    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
-        
+
     if(1==isdata)
         {
             if(0x7c==dat)
                 {
-                    
+
                     if(bufferindex<1000)
-                    {
-                    isdata=1;
-                    bufferindex=0;
-                    buffer[bufferindex++]=dat;
-                    return ;                        
-                    }
+                        {
+                            isdata=1;
+                            bufferindex=0;
+                            buffer[bufferindex++]=dat;
+                            return ;
+                        }
                     buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
-                                               
+
                 }
             else
                 {
@@ -113,7 +135,7 @@ void UART4_IRQHandler(void)
         {
             buffer[bufferindex++]=dat;
             isdata=1;
+            return ;
         }
-
 }
 
