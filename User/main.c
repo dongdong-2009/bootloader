@@ -11,6 +11,8 @@
 #include "stm32f10x_rcc.h"
 #include "private.h"
 
+#include "AT_cmd.h"
+
 #include "string.h"
 
 #define resend_times 5
@@ -135,7 +137,7 @@ static u16 data_wifi_processed(u8 * buf,u16 len)
     return trans_7c_set(buf,len);
 }
 
-static bool delay(u32 timeout)
+bool delay(u32 timeout)
 {
 
     for(u32 i=0; i<timeout; i++)
@@ -344,16 +346,28 @@ __re_send_slave:
         }
 }
 
-bool check_server(u32 timeout)
+bool _check_server(u32 timeout)
 {
     bootloader_step.sta=info_server;
-    u8 temp[]= {0x7c,0,0,0,0,0,0,0,0,0,0,0x7c};
+    u8 temp[100]= {0x7c,0,0,0,0,0,0,0,0,0,0,0x7c};
     before_send_uart4();
-    wifi_send(temp,sizeof(temp)/sizeof(u8));
+    wifi_send(temp,12);
     bool sta = delay(10000);
     before_send_uart4();
     bootloader_step.sta=normal;
-    return temp;
+    return sta;
+}
+
+bool check_server(u8 times)
+{
+    while(times--)
+    {
+        if(_check_server(6000))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 u8 update_app(u32 addr,u32 package)
@@ -427,38 +441,78 @@ resend:
     return 0;
 }
 
-
-bool GSM_Init(void)  //初始化GSM
-{
-
-
-}
-
-//判断是不是GSM得
-u8 is_gsm(void)
-{
-    u8 __sta=0;
-    bootloader_step.sta=init;
-    char temp[]="AT\r";
-//    temp ="AT\r";
-    wifi_send((u8*)temp,3);
-    bool sta=delay(1000);
-    if(sta==true)   //接收成功
-        {
-            if(0==memcmp(buffer,temp,2))
-                {
-                    __sta=2;
-                }
-        }
-    return __sta;
-}
-
 /**
   * @brief  主函数
   * @param  无
   * @retval 无
   */
 u16 temp_=0;
+#include "M26.h"
+
+u32 __rate=0;
+int NULLmain()
+{
+    u8 buf[100];
+
+    memset(&bootloader_step,0,sizeof(_bootloader_type));
+    bootloader_step.sta=normal;
+
+    clock_init();
+
+    led_Init();
+
+    RST_Init();
+
+    Uart4_Init(115200);
+
+    SysTick_Init();
+
+    GSM_RST();
+
+    Delay_us(1000*1000*4);
+
+    sprintf((char*)buf,"ATE0\r");
+
+//    ATcheckreply(buf,"ANY\r",10000);
+
+    __rate=gsm_signal();
+    __rate=gsm_connect_server();
+
+//    if(true==ATcheckreply(buf,"OK\r",10000))
+//        {
+//            printf("OK\n");
+//        }
+//    else
+//        {
+//            printf("err\n");
+//        }
+
+//    if(true==ATcheckreply(buf,"NONE",10000))
+//        {
+//            printf("OK\n");
+//        }
+//    else
+//        {
+//            printf("err\n");
+//        }
+
+//    if(true==ATcheckreply(buf,"ANY",10000))
+//        {
+//            printf("OK\n");
+//        }
+//    else
+//        {
+//            printf("err\n");
+//        }
+
+    while(1)
+        {
+
+
+        }
+
+}
+
 int main(void)
 {
     u8 updateinfo = 0;
@@ -496,7 +550,7 @@ int main(void)
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-                    updateinfo=1;
+//                    updateinfo=1;
                     if((update_master!=(update_master&updateinfo))\
                             &&(update_master_backup!=(update_master_backup&updateinfo))\
                             &&(update_slave!=(update_slave&updateinfo)))
@@ -511,45 +565,46 @@ int main(void)
                             ||(update_slave==(update_slave&updateinfo)))
                         {
                             copy_from_app();//需要更新的信息拷贝过来
-                            if(true!=check_server(10000))
+                            if(true!=check_server(1))
                                 {
-                                    GSM_RST();
                                     Delay_us(1000*1000*5);
-                                    u8 which_module=is_gsm();
-                                    switch (which_module)
+                                    if(true!=check_server(1))
                                         {
-
-                                        case 0:  //wifi module
-                                        {
-//                                            Delay_us(1000*1000*10);//等待10s
-                                            break;
-                                        }
-                                        case 2:           //GSM module
-                                        {
-                                            static u8 _num_err=0;
-__gsm_init:
-                                            if(!GSM_Init())
+                                            u8 which_module=is_gsm();
+                                            switch (which_module)
                                                 {
-                                                    _num_err++;
-                                                    if(_num_err<3)
-                                                        {
-                                                            goto __gsm_init;
-                                                        }
-                                                    goto reboot;
+
+                                                case 0:  //wifi module
+                                                {
+                                                     if(true!=check_server(3))
+                                                     {
+                                                        goto reboot;
+                                                     }
+                                                    break;
                                                 }
-                                            break;
-                                        }
-                                        case 3:         // 3G module
-                                        {
+                                                case 2:           //GSM module
+                                                {
+                                                    if(!GSM_Init())
+                                                        {
+                                                            goto reboot;
+                                                        }
+                                                    break;
+                                                }
+                                                case 3:         // 3G module
+                                                {
 
+                                                    break;
+                                                }
+                                                default:
+                                                    break;
+                                                }
 
-                                            break;
                                         }
-                                        default:
-                                            break;
-                                        }
+
                                 }
+
                         }
+//                    updateinfo=0;
                     if(update_master==(update_master&updateinfo))
                         {
                             _is_back=0x01;

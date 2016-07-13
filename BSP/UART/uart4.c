@@ -1,10 +1,5 @@
 #include "uart4.h"
-#include "stm32f10x.h"
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_usart.h"
-#include "stm32f10x_gpio.h"
-#include "misc.h"
-#include "boot_CFG.h"
+
 
 extern _bootloader_type bootloader_step;
 
@@ -45,9 +40,13 @@ void Uart4_Init(int baud_rate)
     USART_Cmd(UART4, ENABLE);
 }
 
+void GSM_USART_INIT(u32 rate)
+{
+    Uart4_Init(rate);
+}
 
 
-static void UART4_SEND_CHAR(char ch)
+ void UART4_SEND_CHAR(char ch)
 {
     USART_SendData(UART4, ch);
     while (USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);
@@ -74,6 +73,7 @@ void before_send_uart4(void)
     memset(buffer,0,2048);
 }
 
+const u8 _info_[]="PowerShare Server! Your's msg is error!";
 void UART4_IRQHandler(void)
 {
 
@@ -87,7 +87,8 @@ void UART4_IRQHandler(void)
         
     if(bootloader_step.sta==info_server)
         {
-            if('P'==dat)
+            buffer[bufferindex++]=dat;
+            if((bufferindex==0x27)&&(0==memcmp(buffer,_info_,sizeof(_info_)/sizeof(u8))))
             {
                 receive_ok=1;
             }
@@ -95,11 +96,16 @@ void UART4_IRQHandler(void)
         }
     if(bootloader_step.sta==init)
         {
-            if((0x0A==dat)&&(0x0D==buffer[bufferindex]))
+            buffer[bufferindex++]=dat;
+            if((2==bufferindex)&&((0x0A==buffer[bufferindex-1])&&(0x0D==buffer[bufferindex-2])))
+            {
+                bufferindex=0;
+            }
+            if((0x0A==buffer[bufferindex-1])&&(0x0D==buffer[bufferindex-2]))
             {
                 receive_ok=1;
             }
-            buffer[bufferindex++]=dat;
+
             return;
         }
     if(1==receive_ok)

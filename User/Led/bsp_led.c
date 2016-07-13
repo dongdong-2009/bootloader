@@ -25,12 +25,15 @@ void RST_Init(void)
     GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOE,&GPIO_InitStructure);
+        GPIO_SetBits(GPIOE,GPIO_Pin_5);
 }
 
+
+#include "bsp_SysTick.h"
 void GSM_RST(void)
 {
     GPIO_ResetBits(GPIOE,GPIO_Pin_5);
-    for(u16 i=0;i<2000;i++);
+    Delay_us(1000*100);
     GPIO_SetBits(GPIOE,GPIO_Pin_5);
 }
     

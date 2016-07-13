@@ -349,7 +349,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -371,7 +371,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\User\SysTick;..\..\BSP\UART;..\..\BSP\FLASH;..\..\BSP\Cryptographic;..\..\BSP\private;..\..\STM32_Cryptographic_Library;..\..\STM32_Cryptographic_Library\binary;..\..\STM32_Cryptographic_Library\inc;..\..\STM32_Cryptographic_Library\inc\AES</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\User\SysTick;..\..\BSP\UART;..\..\BSP\FLASH;..\..\BSP\Cryptographic;..\..\BSP\private;..\..\STM32_Cryptographic_Library;..\..\STM32_Cryptographic_Library\binary;..\..\STM32_Cryptographic_Library\inc;..\..\STM32_Cryptographic_Library\inc\AES;..\..\BSP\M26</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -683,6 +683,31 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\Doc\readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>M26</GroupName>
+          <Files>
+            <File>
+              <FileName>AT_cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\M26\AT_cmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>AT_cmd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\M26\AT_cmd.h</FilePath>
+            </File>
+            <File>
+              <FileName>M26.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BSP\M26\M26.c</FilePath>
+            </File>
+            <File>
+              <FileName>M26.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\BSP\M26\M26.h</FilePath>
             </File>
           </Files>
         </Group>

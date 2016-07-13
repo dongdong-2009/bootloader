@@ -52,6 +52,8 @@
 #define appVerByte_1_Add            0x0803F02A              //最新更新版本第一个字节          
 #define appVerByte_2_Add            0x0803F02C              //最新更新版本第二个字节
 
+#define IP_ADRESS                   0x0803F000+128              //ip地址，端口号    ip[4],port[2],HL，高字节在前
+
 typedef enum
 {
     none,
@@ -62,14 +64,18 @@ typedef enum
 }
 _bootsta;
 
+typedef struct
+{
+    u8 IP[4];
+    u8 PORT[2];
+}_server_pra;
 
 
 
 typedef struct
 {
     _bootsta sta;
-    
-
+    _server_pra server_pra;
 }
 _bootloader_type;
 
