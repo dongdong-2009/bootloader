@@ -29,8 +29,8 @@ bool ATcheckreply(u8* cmd,u8* reply,u16 timeout)
     bool check_sta=false;
     u16 reply_len=get_len(reply);
     bootloader_step.sta=init;
-
-
+    
+    Delay_us(1000*10);
     before_send_uart4();
     ATCommand(cmd);
     if(0==strncmp((char*)reply,"NONE",4))
@@ -72,7 +72,7 @@ bool rec_send_none(u8* reply,u16 timeout)
     bool check_sta=false;
     u16 reply_len=get_len(reply);
     bootloader_step.sta=init;
-//    before_send_uart4();
+    before_send_uart4();
     if(0==strncmp((char*)reply,"ANY",3))
         {
             check_sta = delay(timeout);

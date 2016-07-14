@@ -5,6 +5,7 @@
 #include "stm32f10x_gpio.h"
 #include "misc.h"
 #include "stdio.h"
+#include "string.h"
 
 u8 u1_buffer[2048];
 
@@ -49,19 +50,6 @@ void usart1_conf(u32 baud_rate)
 }
 
 
-/////重定向c库函数printf到USART1
-//int fputc(int ch, FILE *f)
-//{
-//    /* 发送一个字节数据到USART1 */
-//    USART_SendData(USART1, (uint8_t) ch);
-
-//    /* 等待发送完毕 */
-//    while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
-
-//    return (ch);
-//}
-
-
 static void USART1_SEND_CHAR(char ch)
 {
     USART_SendData(USART1, ch);
@@ -76,7 +64,6 @@ void USART1_IRQHandler(void)
 
             u8 dat = USART_ReceiveData(USART1);
             
-//            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
             if(1==receive_slave)
             {
                 return ;
@@ -118,7 +105,7 @@ void MASTER_SEND(u8 * buf,u32 len)
             USART1_SEND_CHAR(*buf++);
         }
 }
-#include "string.h"
+
 
 void before_send_sa(void)
 {

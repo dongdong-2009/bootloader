@@ -97,7 +97,7 @@ void UART4_IRQHandler(void)
     if(bootloader_step.sta==init)
         {
             buffer[bufferindex++]=dat;
-            if((2==bufferindex)&&((0x0A==buffer[bufferindex-1])&&(0x0D==buffer[bufferindex-2])))
+            if((1==bufferindex)&&((0x0A==buffer[bufferindex-1])||(0x0D==buffer[bufferindex-1])))
             {
                 bufferindex=0;
             }
@@ -105,7 +105,7 @@ void UART4_IRQHandler(void)
             {
                 receive_ok=1;
             }
-
+//            bootloader_step.sta=normal;
             return;
         }
     if(1==receive_ok)
@@ -113,7 +113,7 @@ void UART4_IRQHandler(void)
             return ;
         }
 //    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
-
+    buffer[bufferindex++]=dat;
     if(1==isdata)
         {
             if(0x7c==dat)
@@ -123,25 +123,30 @@ void UART4_IRQHandler(void)
                         {
                             isdata=1;
                             bufferindex=0;
-                            buffer[bufferindex++]=dat;
+//                            buffer[bufferindex++]=dat;
                             return ;
                         }
-                    buffer[bufferindex++]=dat;
+//                    buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
 
                 }
             else
                 {
-                    buffer[bufferindex++]=dat;
+//                    buffer[bufferindex++]=dat;
                 }
             return;
         }
     if(0x7c==dat)
         {
-            buffer[bufferindex++]=dat;
+//            buffer[bufferindex++]=dat;
             isdata=1;
             return ;
+        }
+        
+     if (strncmp((char*)buffer, "CLOSED", 6) == 0) 
+         {
+             NVIC_SystemReset();
         }
 }
 

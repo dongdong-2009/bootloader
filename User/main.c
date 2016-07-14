@@ -446,72 +446,7 @@ resend:
   * @param  无
   * @retval 无
   */
-u16 temp_=0;
 #include "M26.h"
-
-u32 __rate=0;
-int NULLmain()
-{
-    u8 buf[100];
-
-    memset(&bootloader_step,0,sizeof(_bootloader_type));
-    bootloader_step.sta=normal;
-
-    clock_init();
-
-    led_Init();
-
-    RST_Init();
-
-    Uart4_Init(115200);
-
-    SysTick_Init();
-
-    GSM_RST();
-
-    Delay_us(1000*1000*4);
-
-    sprintf((char*)buf,"ATE0\r");
-
-//    ATcheckreply(buf,"ANY\r",10000);
-
-    __rate=gsm_signal();
-    __rate=gsm_connect_server();
-
-//    if(true==ATcheckreply(buf,"OK\r",10000))
-//        {
-//            printf("OK\n");
-//        }
-//    else
-//        {
-//            printf("err\n");
-//        }
-
-//    if(true==ATcheckreply(buf,"NONE",10000))
-//        {
-//            printf("OK\n");
-//        }
-//    else
-//        {
-//            printf("err\n");
-//        }
-
-//    if(true==ATcheckreply(buf,"ANY",10000))
-//        {
-//            printf("OK\n");
-//        }
-//    else
-//        {
-//            printf("err\n");
-//        }
-
-    while(1)
-        {
-
-
-        }
-
-}
 
 int main(void)
 {
@@ -551,6 +486,8 @@ int main(void)
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
 //                    updateinfo=1;
+//                    GSM_Init();
+//                    updateinfo=0;
                     if((update_master!=(update_master&updateinfo))\
                             &&(update_master_backup!=(update_master_backup&updateinfo))\
                             &&(update_slave!=(update_slave&updateinfo)))

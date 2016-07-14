@@ -113,6 +113,7 @@ bool gsm_set_sendpra(void)
 //Á¬½Ótcp
 static bool _gsm_connect_server(_server_pra* info)
 {
+    bool __sta=false;
     char send_buf[100];
     memset(send_buf,0,sizeof(send_buf)/sizeof(send_buf[0]));
     //read flash;
@@ -124,8 +125,17 @@ static bool _gsm_connect_server(_server_pra* info)
     info->PORT[0]=0x49;
     info->PORT[1]=0x12;
     u16 IP_PORT= (info->PORT[0]<<8)|info->PORT[1];
-    sprintf(send_buf,"AT+QIOPEN=\"TCP\",\"%d.%d.%d.%d\",\"%d\"",info->IP[0],info->IP[1],info->IP[2],info->IP[3],IP_PORT);
-    return ATcheckreply((u8*)send_buf,"CONNECT OK\r",2000);
+    sprintf(send_buf,"AT+QIOPEN=\"TCP\",\"%d.%d.%d.%d\",\"%d\"\r",info->IP[0],info->IP[1],info->IP[2],info->IP[3],IP_PORT);
+    if(ATcheckreply((u8*)send_buf,"OK\r",2000))
+    {
+    rec_send_none("ANY\r",8000);
+    u16 len=strlen((char*)buffer)-2;
+    if(0==strncmp((char*)buffer,"CONNECT OK\r",len))
+    {
+        __sta=true;
+    }
+}
+     return __sta;
 }
 
 
