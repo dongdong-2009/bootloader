@@ -46,16 +46,11 @@ void GSM_USART_INIT(u32 rate)
 }
 
 
- void UART4_SEND_CHAR(char ch)
+void UART4_SEND_CHAR(char ch)
 {
     USART_SendData(UART4, ch);
     while (USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);
 }
-
-//static void wifi_send_char(char ch)
-//{
-//    UART4_SEND_CHAR(ch);
-//}
 
 void wifi_send(u8 * buf,u32 len)
 {
@@ -84,35 +79,34 @@ void UART4_IRQHandler(void)
         }
 
     dat = USART_ReceiveData(UART4);
-        
+
     if(bootloader_step.sta==info_server)
         {
             buffer[bufferindex++]=dat;
             if((bufferindex==0x27)&&(0==memcmp(buffer,_info_,sizeof(_info_)/sizeof(u8))))
-            {
-                receive_ok=1;
-            }
+                {
+                    receive_ok=1;
+                }
             return;
         }
     if(bootloader_step.sta==init)
         {
             buffer[bufferindex++]=dat;
             if((1==bufferindex)&&((0x0A==buffer[bufferindex-1])||(0x0D==buffer[bufferindex-1])))
-            {
-                bufferindex=0;
-            }
+                {
+                    bufferindex=0;
+                }
             if((0x0A==buffer[bufferindex-1])&&(0x0D==buffer[bufferindex-2]))
-            {
-                receive_ok=1;
-            }
-//            bootloader_step.sta=normal;
+                {
+                    receive_ok=1;
+                }
             return;
         }
     if(1==receive_ok)
         {
             return ;
         }
-//    USART_ClearITPendingBit(UART4, USART_IT_RXNE);
+        
     buffer[bufferindex++]=dat;
     if(1==isdata)
         {
@@ -123,30 +117,34 @@ void UART4_IRQHandler(void)
                         {
                             isdata=1;
                             bufferindex=0;
-//                            buffer[bufferindex++]=dat;
                             return ;
                         }
-//                    buffer[bufferindex++]=dat;
                     isdata=0;
                     receive_ok=1;
 
                 }
             else
                 {
-//                    buffer[bufferindex++]=dat;
                 }
             return;
         }
     if(0x7c==dat)
         {
-//            buffer[bufferindex++]=dat;
             isdata=1;
             return ;
         }
-        
-     if (strncmp((char*)buffer, "CLOSED", 6) == 0) 
-         {
-             NVIC_SystemReset();
+//CLOSED
+    if (strncmp((char*)buffer, "CLOSED", 6) == 0)
+        {
+            NVIC_SystemReset();
         }
+
+//+PDP DEACT
+
+    if (strncmp((char*)buffer, "+PDP DEACT", 10) == 0)
+        {
+            NVIC_SystemReset();
+        }
+
 }
 

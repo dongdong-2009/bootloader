@@ -361,12 +361,12 @@ bool _check_server(u32 timeout)
 bool check_server(u8 times)
 {
     while(times--)
-    {
-        if(_check_server(6000))
         {
-            return true;
+            if(_check_server(6000))
+                {
+                    return true;
+                }
         }
-    }
     return false;
 }
 
@@ -441,6 +441,31 @@ resend:
     return 0;
 }
 
+
+
+void write_err(void)
+{
+    u16 temp=flash_read_halfword(ERROR)+1;
+    write_flage(appBackStartAdress,ERROR,temp);//写版本信息
+}
+
+void write_sucessed(void)
+{
+    u16 temp=flash_read_halfword(sucessed)+1;
+    if(temp>100)
+        {
+            for(;;)
+                {
+                    LED1(0);
+                    Delay_us(50000);
+                    LED1(1);
+                    Delay_us(100000);
+                }
+        }
+    write_flage(appBackStartAdress,sucessed,temp);//写版本信息
+}
+
+
 /**
   * @brief  主函数
   * @param  无
@@ -469,6 +494,11 @@ int main(void)
     Flash_Init();
 
     usart1_conf(115200);
+    
+    GSM_RST();
+    
+//        write_flage(appBackStartAdress,ERROR,0);//写版本信息
+//        write_flage(appBackStartAdress,sucessed,0);//写版本信息
 
     if(0xFFFF==flash_read_halfword(boot_version))
         {
@@ -485,9 +515,6 @@ int main(void)
             if(true==is_protocol())
                 {
                     updateinfo=flash_read_halfword(appUpdateFlagAddress);//需要更新
-//                    updateinfo=1;
-//                    GSM_Init();
-//                    updateinfo=0;
                     if((update_master!=(update_master&updateinfo))\
                             &&(update_master_backup!=(update_master_backup&updateinfo))\
                             &&(update_slave!=(update_slave&updateinfo)))
@@ -497,6 +524,8 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);
                                 }
                         }
+                    updateinfo=1;
+
                     if((update_master==(update_master&updateinfo))\
                             ||(update_master_backup==(update_master_backup&updateinfo))\
                             ||(update_slave==(update_slave&updateinfo)))
@@ -504,6 +533,7 @@ int main(void)
                             copy_from_app();//需要更新的信息拷贝过来
                             if(true!=check_server(1))
                                 {
+                                    GSM_RST();
                                     Delay_us(1000*1000*5);
                                     if(true!=check_server(1))
                                         {
@@ -513,10 +543,10 @@ int main(void)
 
                                                 case 0:  //wifi module
                                                 {
-                                                     if(true!=check_server(3))
-                                                     {
-                                                        goto reboot;
-                                                     }
+                                                    if(true!=check_server(3))
+                                                        {
+                                                            goto reboot;
+                                                        }
                                                     break;
                                                 }
                                                 case 2:           //GSM module
@@ -535,11 +565,8 @@ int main(void)
                                                 default:
                                                     break;
                                                 }
-
                                         }
-
                                 }
-
                         }
 //                    updateinfo=0;
                     if(update_master==(update_master&updateinfo))
@@ -557,6 +584,11 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
                                     write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+#ifdef update_test
+                                    write_sucessed();
+                                    goto reboot;
+#endif
+
                                 }
                             else     //更新失败
                                 {
@@ -564,7 +596,10 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    goto jump;
+#ifdef update_test
+                                    write_err();
+                                    goto reboot;
+#endif
                                 }
                         }
                     if(update_master_backup==(update_master_backup&updateinfo))
@@ -582,6 +617,11 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
                                     write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+#ifdef update_test
+                                    write_sucessed();
+                                    goto reboot;
+#endif
+
                                 }
                             else
                                 {
@@ -589,7 +629,10 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    goto jump;
+#ifdef update_test
+                                    write_err();
+                                    goto reboot;
+#endif
                                 }
                         }
                     if(update_slave==(update_slave&updateinfo))
@@ -601,13 +644,21 @@ int main(void)
                                     info|=update_slave;
                                     write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+#ifdef update_test
+                                    write_sucessed();
+                                    goto reboot;
+#endif
+
                                 }
                             else
                                 {
                                     u8 _count=flash_read_halfword(bootAppNumAddress);
                                     write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
                                     write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    goto jump;
+#ifdef update_test
+                                    write_err();
+                                    goto reboot;
+#endif
                                 }
                         }
                 }
@@ -615,7 +666,9 @@ int main(void)
     else     //将boot的更新完成指令写成0，然后跳转到相应的程序中去
         {
             write_flage(bootUpdateIfoAddress,boot_location_flag,0);//将boot更新完成的标志置1
-            goto jump;
+//            goto jump;
+            //测试修改
+            goto reboot;
         }
 jump:
     SysTick->CTRL &= ~ SysTick_CTRL_ENABLE_Msk;

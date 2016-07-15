@@ -9,6 +9,8 @@
 #define packge_size 1024
 #define err_threshold 10
 
+#define update_test
+
 //FLASH地址
 #define STM32_FLASH_BASE            0x08000000 	            //STM32 FLASH的起始地
 #define bootloaderStartAppAdress    0x08000000              //预留20K
@@ -41,6 +43,10 @@
 #define bootVerByte_1_Add           0x0803E02C              //Boot最新程序版本第一字节
 #define bootVerByte_2_Add           0x0803E02E              //Boot最新程序版本第二字节
 #define boot_location_flag          0x0803E03A              //本地的重启标志
+
+#define sucessed          appBackStartAdress              //本地的重启标志
+#define ERROR          appBackStartAdress+2              //本地的重启标志
+
 
 
 #define appComIDAddress             0x0803F004              //运营商ID号地址

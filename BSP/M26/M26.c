@@ -159,6 +159,8 @@ bool gsm_connect_server(void)
 
 bool GSM_Init(void)  //≥ı ºªØGSM
 {
+    
+    
     u32 rate=gsm_checkbandrate();
     if(0==rate)
         {

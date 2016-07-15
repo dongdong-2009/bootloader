@@ -62,21 +62,18 @@ void Flash_Init(void)
 
 bool write_flage(u32 addr,u32 specify,u16 value)
 {
-    u16 temp_flag[50];
+    const u8 len=100;
+    u16 temp_flag[len];
     u32 temp_addr=addr;
     u8 index = (specify - addr)>>1;
-    for(u16 i=0; i<50; i++)
+    for(u16 i=0; i<len; i++)
         {
             temp_flag[i]=flash_read_halfword(addr);
             addr+=2;
         }
     temp_flag[index] = value;
     FLASH_ErasePage(temp_addr);
-//    if(FLASH_COMPLETE!=FLASH_ErasePage(temp_addr))
-//    {
-//        return false;
-//    }
-
-    bool st=flash_write(temp_addr,temp_flag,50);
+        
+    bool st=flash_write(temp_addr,temp_flag,len);
     return st;
 }
