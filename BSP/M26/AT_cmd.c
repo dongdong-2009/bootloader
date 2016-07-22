@@ -17,7 +17,7 @@ u16 get_len(u8* buf)
         {
             if(*(buf+i)=='\r')
                 {
-                    return i+1;
+                    return i;
                 }
         }
     return 0;

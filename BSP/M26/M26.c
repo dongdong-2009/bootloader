@@ -49,6 +49,11 @@ bool gsm_isregister(void)
     memset(send_buf,0,sizeof(send_buf)/sizeof(send_buf[0]));
     sprintf(send_buf,"AT+CREG?\r");
     return ATcheckreply((u8*)send_buf,"+CREG: 0,1\r",2000);
+//    if(ATcheckreply((u8*)send_buf,"ANY\r",2000))
+//    {
+//        temp=((0==strncmp((char*)buffer,"+CREG: 0,1",10))||(0==strncmp((char*)buffer,"+CREG: 0,5",10)));
+//    }
+//    return temp;
 }
 
 //查看模块信号强度
@@ -111,13 +116,24 @@ bool gsm_set_sendpra(void)
 }
 
 //连接tcp
+static void read_IPpra(_server_pra* info)
+{
+    info->IP[0]=flash_read_halfword(IP_ADRESS+2*1)&0xff;
+    info->IP[1]=flash_read_halfword(IP_ADRESS+2*2)&0xff;
+    info->IP[2]=flash_read_halfword(IP_ADRESS+2*3)&0xff;
+    info->IP[3]=flash_read_halfword(IP_ADRESS+2*4)&0xff;
+    info->PORT[0]=flash_read_halfword(IP_ADRESS+2*5)&0xff;
+    info->PORT[1]=flash_read_halfword(IP_ADRESS+2*6)&0xff;
+}
+
 static bool _gsm_connect_server(_server_pra* info)
 {
     bool __sta=false;
     char send_buf[100];
     memset(send_buf,0,sizeof(send_buf)/sizeof(send_buf[0]));
     //read flash;
-
+    read_IPpra(info);
+    
     info->IP[0]=123;
     info->IP[1]=59;
     info->IP[2]=136;
@@ -138,16 +154,6 @@ static bool _gsm_connect_server(_server_pra* info)
      return __sta;
 }
 
-
-static void read_IPpra(_server_pra* info)
-{
-    info->IP[0]=flash_read_halfword(IP_ADRESS+2*1)&0xff;
-    info->IP[1]=flash_read_halfword(IP_ADRESS+2*2)&0xff;
-    info->IP[2]=flash_read_halfword(IP_ADRESS+2*3)&0xff;
-    info->IP[3]=flash_read_halfword(IP_ADRESS+2*4)&0xff;
-    info->PORT[0]=flash_read_halfword(IP_ADRESS+2*5)&0xff;
-    info->PORT[1]=flash_read_halfword(IP_ADRESS+2*6)&0xff;
-}
 
 
 bool gsm_connect_server(void)
