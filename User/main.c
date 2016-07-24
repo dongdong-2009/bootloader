@@ -1,3 +1,12 @@
+/*********************************************************************************************
+*                               charge_pile bootloader                                       *
+*company    :   powershare shanghai                                                          *
+*version    :   V2.1                                                                         *
+*author     :   masuchen                                                                     *
+*MCU        :   stm32f103vct6                                                                *
+*modify     :   save code in backup area first, copy to app area when upgrade successful.    *
+*time       :   2016/7/24 23:33                                                              *
+**********************************************************************************************/
 #include "stm32f10x.h"
 #include "bsp_SysTick.h"
 #include "bsp_led.h"
@@ -398,6 +407,30 @@ resend:
         }
     return 0;
 }
+//flash 复制函数
+//dest ：目的地址
+//src  ：源地址
+//拷贝的长度，长度的单位是2K，flash每个山区的大小
+bool copy_flash(u32 dest,u32 src,u16 len)
+{
+    u8  __temp[2048];
+    for(u8 _Page=0; _Page<len; _Page++)
+        {
+            for(u16 i=0; i<2048; i++)
+                {
+                    __temp[i]=flash_read_char(i+src+2048*_Page);
+                }
+            FLASH_ErasePage(dest+2048*_Page);
+            if(!flash_write(dest+2048*_Page,(u16*)__temp,1024))
+                {
+                    if(!flash_write(dest+2048*_Page,(u16*)__temp,1024))
+                        {
+                            return false;
+                        }
+                }
+        }
+    return true;
+}
 /**
   * @brief  主函数
   * @param  无
@@ -440,7 +473,6 @@ int main(void)
                                     write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,0);
                                 }
                         }
-//                    updateinfo=1;
                     if((update_master==(update_master&updateinfo))\
                             ||(update_master_backup==(update_master_backup&updateinfo))\
                             ||(update_slave==(update_slave&updateinfo)))
@@ -483,30 +515,38 @@ int main(void)
                                                 }
                                         }
                                 }
-//                                if(true!=check_server(1))
-//                                {
-//                                   if(true!=check_server(1))
-//                                   {
-//
-//                                   }
-//                                }
                         }
-//                    updateinfo=0;
+//更新无论成功还是失败都是跳转到           appBackStartAdress
+//更新成功则app中是新的程序，否则是原来的程序
+
                     if(update_master==(update_master&updateinfo))
                         {
                             _is_back=0x01;
                             //更新程序
                             copy_from_app();//需要更新的信息拷贝过来
-                            if(0==update_app(appStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
+                            u8 __page_sum =(txBuffer[21]<<8)|txBuffer[20];
+                            if(0==update_app(appBackStartAdress,__page_sum))           //此处做了更改，因为在后面的flash复制的函数中还是会用到总包数。2016/7/24 23:18
                                 {
-                                    write_flage(isbackup,isbackup,0);
-                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
-                                    info|=update_master;
-                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
-                                    write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
-                                    write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
-                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+                                    if(copy_flash(appStartAdress,appBackStartAdress,__page_sum/2+__page_sum%2))
+                                        {
+                                            write_flage(isbackup,isbackup,0);
+                                            write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
+                                            info|=update_master;
+                                            write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                            write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
+                                            write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
+                                            write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+                                            write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+                                        }
+                                    else
+                                        {
+                                            //flash复制失败。
+                                            u8 _count=flash_read_halfword(bootAppNumAddress);
+                                            write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                            write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                            write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                            goto jump;
+                                        }
                                 }
                             else     //更新失败
                                 {
@@ -517,30 +557,33 @@ int main(void)
                                     goto jump;
                                 }
                         }
-                    if(update_master_backup==(update_master_backup&updateinfo))
-                        {
-                            _is_back=0x10;
-                            if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
-                                {
-                                    write_flage(isbackup,isbackup,1);
-                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
-                                    u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
-                                    info|=update_master_backup;
-                                    write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
-                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
-                                    write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
-                                    write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
-                                    write_flage(bootUpdateIfoAddress,boot_location_flag,1);
-                                }
-                            else
-                                {
-                                    u8 _count=flash_read_halfword(bootAppNumAddress);
-                                    write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
-                                    write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
-                                    write_flage(bootUpdateIfoAddress,boot_location_flag,0);
-                                    goto jump;
-                                }
-                        }
+                    /********************************************************************
+                                            //升级备份分区，暂时不用，
+                                        if(update_master_backup==(update_master_backup&updateinfo))
+                                            {
+                                                _is_back=0x10;
+                                                if(0==update_app(appBackStartAdress,(txBuffer[21]<<8)|txBuffer[20]))
+                                                    {
+                                                        write_flage(isbackup,isbackup,1);
+                                                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
+                                                        u16 info= flash_read_halfword(bootAppUpdateStausAddress) ;
+                                                        info|=update_master_backup;
+                                                        write_flage(bootUpdateIfoAddress,bootAppUpdateStausAddress,info);//将boot更新完成的标志置1
+                                                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,1);//新版本有效标志
+                                                        write_flage(bootUpdateIfoAddress,bootVerByte_1_Add,txBuffer[18]);//写版本信息
+                                                        write_flage(bootUpdateIfoAddress,bootVerByte_2_Add,txBuffer[19]);//同上
+                                                        write_flage(bootUpdateIfoAddress,boot_location_flag,1);
+                                                    }
+                                                else
+                                                    {
+                                                        u8 _count=flash_read_halfword(bootAppNumAddress);
+                                                        write_flage(bootUpdateIfoAddress,bootAppNumAddress,_count+1);
+                                                        write_flage(bootUpdateIfoAddress,bootNewVerFlagAddress,0);//新版本无效标志
+                                                        write_flage(bootUpdateIfoAddress,boot_location_flag,0);
+                                                        goto jump;
+                                                    }
+                                            }
+                    **********************************************************************/
                     if(update_slave==(update_slave&updateinfo))
                         {
                             if(true==slave_update())
@@ -574,14 +617,7 @@ jump:
     USART_DeInit(USART1);
     USART_DeInit(UART4);
     FLASH_Lock();
-    if(1==flash_read_halfword(isbackup))
-        {
-            iap_Loader_App(appBackStartAdress);
-        }
-    else
-        {
-            iap_Loader_App(appStartAdress);
-        }
+    iap_Loader_App(appStartAdress);
 reboot:
     NVIC_SystemReset();
     for(;;)
