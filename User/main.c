@@ -174,35 +174,7 @@ u16 sa_dat_process(u8 *p,u16 len)
             return 0;
         }
 }
-//u8 info_slave(void)
-//{
-//    u8 err_sa=0;
-//    u16 len =0;
-////    copy_from_app();
-//    memcpy(send_data,txBuffer,25);
-//    send_data[1]=25;
-//    send_data[17]=0x02;
-//    //将升级指示标志改为1
-//    send_data[3]=0xA3;
-//    len = crc_7c(send_data,25);
-//resend_sa:
-//    before_send_sa();
-//    MASTER_SEND(send_data,len);
-//    if(true==delay_u1(2000))
-//        {
-//            return 0;
-//        }
-//    else
-//        {
-//            err_sa++;
-//            if(err_sa<err_threshold)
-//                {
-//                    goto resend_sa;
-//                }
-//            return 1;//从机应答失败
-//        }
-////return false;
-//}
+
 u8 __info(void)
 {
     u16 err_num=0;
@@ -516,9 +488,6 @@ int main(void)
                                         }
                                 }
                         }
-//更新无论成功还是失败都是跳转到           appBackStartAdress
-//更新成功则app中是新的程序，否则是原来的程序
-
                     if(update_master==(update_master&updateinfo))
                         {
                             _is_back=0x01;
