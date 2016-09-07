@@ -247,7 +247,7 @@ u1_rec_ok:
 re:
                                     before_send_uart4();
                                     wifi_send(u1_buffer,len);
-                                    bool temp=delay(5000);
+                                    bool temp=delay(10000);
                                     if(temp==true)   //接收成功
                                         {
                                             len = receiveDataPakageProcess(buffer,bufferindex);
@@ -257,7 +257,7 @@ re:
 __re_send_slave:
                                                     before_send_sa();
                                                     MASTER_SEND(buffer,len);
-                                                    if(true==delay_u1(10000))
+                                                    if(true==delay_u1(5000))
                                                         {
                                                             //接收成功
                                                             goto u1_rec_ok;
