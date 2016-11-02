@@ -343,7 +343,10 @@ resend:
                                 {
                                     if(i%2)
                                         {
-                                            FLASH_ErasePage(addr+(i-1)*packge_size);
+                                            if(FLASH_COMPLETE!=FLASH_ErasePage(addr+(i-1)*packge_size))
+                                            {
+                                                return 1;
+                                            }
                                         }
                                     writeFlash(addr+(i-1)*packge_size,&buffer[24],__len-27);
                                 }
@@ -494,10 +497,15 @@ int main(void)
                             //更新程序
                             copy_from_app();//需要更新的信息拷贝过来
                             u8 __page_sum =(txBuffer[21]<<8)|txBuffer[20];
+                            if(__page_sum>80)
+                            {
+                               goto lable_packnum_overflow; 
+                            }
                             if(0==update_app(appBackStartAdress,__page_sum))           //此处做了更改，因为在后面的flash复制的函数中还是会用到总包数。2016/7/24 23:18
                                 {
                                     if(copy_flash(appStartAdress,appBackStartAdress,__page_sum/2+__page_sum%2))
                                         {
+lable_packnum_overflow:
                                             write_flage(isbackup,isbackup,0);
                                             write_flage(bootUpdateIfoAddress,bootAppNumAddress,0);
                                             info|=update_master;

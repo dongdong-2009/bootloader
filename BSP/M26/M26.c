@@ -133,13 +133,15 @@ static bool _gsm_connect_server(_server_pra* info)
     memset(send_buf,0,sizeof(send_buf)/sizeof(send_buf[0]));
     //read flash;
     read_IPpra(info);
-    
-    info->IP[0]=123;
-    info->IP[1]=59;
-    info->IP[2]=136;
-    info->IP[3]=48;
-    info->PORT[0]=0x49;
-    info->PORT[1]=0x12;
+    if((info->IP[0]==0)||info->IP[0]==0xff)
+    {
+        info->IP[0]=123;
+        info->IP[1]=59;
+        info->IP[2]=136;
+        info->IP[3]=48;
+        info->PORT[0]=0x49;
+        info->PORT[1]=0x12;
+    }
     u16 IP_PORT= (info->PORT[0]<<8)|info->PORT[1];
     sprintf(send_buf,"AT+QIOPEN=\"TCP\",\"%d.%d.%d.%d\",\"%d\"\r",info->IP[0],info->IP[1],info->IP[2],info->IP[3],IP_PORT);
     if(ATcheckreply((u8*)send_buf,"OK\r",2000))
@@ -226,10 +228,6 @@ u8 is_gsm(void)
 //
 //
 //    }
-
         }
-
     return __temp;
-
-
 }
