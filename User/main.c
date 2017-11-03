@@ -570,6 +570,7 @@ jump:
         {
             iap_Loader_App(appStartAdress);
         }
+    while(1);        
 reboot:
     NVIC_SystemReset();
 
